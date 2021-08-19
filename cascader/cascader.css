@@ -1,7 +1,6 @@
-.layui-icon{
+.el-cascader-panel .layui-icon,.el-cascader .layui-icon{
     font-size: 12px;
 }
-
 
 /*弹出面板*/
 .el-popper .popper__arrow,.el-popper .popper__arrow:after {

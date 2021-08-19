@@ -571,7 +571,7 @@ layui.define(["jquery"], function (exports) {
       // debounce: 300,        //搜索关键词输入的去抖延迟，毫秒
       // beforeFilter: function (value) {
       // },//筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选
-      popperClass: '',      //	自定义浮层类名	string
+      // popperClass: '',      //	自定义浮层类名	string
     }, option.options);
     // 配置
     this.config = $.extend(true, {              //配置选项
@@ -580,10 +580,9 @@ layui.define(["jquery"], function (exports) {
       expandTrigger: 'click',//次级菜单的展开方式	string	click / hover	'click'
       multiple: false,	    //是否多选	boolean	-	false
       checkStrictly: false,	//是否严格的遵守父子节点不互相关联	boolean	-	false
-      // emitPath: true,	      //在选中节点改变时，是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值	boolean	-	true
       // lazy: false,	        //是否动态加载子节点，需与 lazyLoad 方法结合使用	boolean	-	false
       // lazyLoad: function (node, resolve) {
-      // },	//加载动态数据的方法，仅在 lazy 为 true 时有效	function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用)	-	-
+      // },	//加载动态数据的方法，仅在 lazy 为 true 时有效	function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用)
       value: 'value',	      //指定选项的值为选项对象的某个属性值	string	—	'value'
       label: 'label',	      //指定选项标签为选项对象的某个属性值	string	—	'label'
       children: 'children',	//指定选项的子选项为选项对象的某个属性值	string	—	'children'
@@ -966,34 +965,36 @@ layui.define(["jquery"], function (exports) {
     },
     // 设置可清理
     _setClear: function () {
-      var self = this;
+      if (this.options.clearable) {
+        var self = this;
 
-      function enter() {
-        self.$icon.removeClass(self.icons.down);
-        self.$icon.addClass(self.icons.close);
+        function enter() {
+          self.$icon.removeClass(self.icons.down);
+          self.$icon.addClass(self.icons.close);
+        }
+
+        function out() {
+          self.$icon.removeClass(self.icons.close);
+          self.$icon.addClass(self.icons.down);
+        }
+
+        self.$div.mouseenter(function () {
+          enter();
+        });
+        self.$div.mouseleave(function () {
+          out();
+        });
+        self.$icon.click(function (event) {
+          event.stopPropagation();
+          self.blur(event);
+          self.clearCheckedNodes();
+          out();
+          self.$icon.off('click');
+          self.$icon.off('mouseenter');
+          self.$div.off('mouseenter');
+          self.$div.off('mouseleave');
+        });
       }
-
-      function out() {
-        self.$icon.removeClass(self.icons.close);
-        self.$icon.addClass(self.icons.down);
-      }
-
-      self.$div.mouseenter(function () {
-        enter();
-      });
-      self.$div.mouseleave(function () {
-        out();
-      });
-      self.$icon.click(function (event) {
-        event.stopPropagation();
-        self.blur(event);
-        self.clearCheckedNodes();
-        out();
-        self.$icon.off('click');
-        self.$icon.off('mouseenter');
-        self.$div.off('mouseenter');
-        self.$div.off('mouseleave');
-      });
     },
     // 禁用
     disabled: function (isDisabled) {
@@ -1172,7 +1173,7 @@ layui.define(["jquery"], function (exports) {
     };
   };
 
-  exports('cascader', function (option) {
+  exports('layCascader', function (option) {
     var ins = new Cascader(option);
     return thisCas.call(ins);
   });
