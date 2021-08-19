@@ -714,6 +714,57 @@ layui.use('layCascader', function () {
         </tbody>
     </table>
 </div>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>Event</legend>
+</fieldset>
+<div class="layui-form" style="margin: 0 40px;">
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>方法名</th>
+            <th>说明</th>
+            <th>参数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>change</td>
+            <td>当节点变更时，执行回调.多选时，可能会出现多次回调</td>
+            <td>function(value,Node){}</td>
+        </tr>
+        <tr>
+            <td>disabled</td>
+            <td>禁用组件</td>
+            <td>boolean</td>
+        </tr>
+        <tr>
+            <td>blur</td>
+            <td>收起面板</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>focus</td>
+            <td>展开面板</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>getCheckedNodes</td>
+            <td>获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>getCheckedValues</td>
+            <td>获取选中的值</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>clearCheckedNodes</td>
+            <td>清空选中的节点</td>
+            <td>-</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <!--您的Layui代码start-->
 <script type="text/javascript">
     var data = [{
