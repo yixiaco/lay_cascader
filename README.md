@@ -1,6 +1,8 @@
 # lay_cascader
 layui cascader 仿element-ui级联选择器
 
+**演示页面**：https://yixiaco.github.io/lay_cascader/
+
 ## props
 
 | 参数          | 说明                                             | 类型    | 可选值        | 默认值     |
