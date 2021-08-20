@@ -658,7 +658,8 @@ layui.define(["jquery"], function (exports) {
         var divHeight = $div.height();
         var boundingClientRect = $div[0].getBoundingClientRect();
 
-        if (windowHeight - (boundingClientRect.top + divHeight) < panelHeight && boundingClientRect.top > panelHeight) {
+        var bottomHeight = windowHeight - (boundingClientRect.top + divHeight);
+        if (bottomHeight < panelHeight && boundingClientRect.top > panelHeight + 20) {
           $panel.attr('x-placement', 'top-start')
           // 向上
           $panel.css({
@@ -874,11 +875,11 @@ layui.define(["jquery"], function (exports) {
       // 滚动条监听事件
       function _scrollbarEvent($scroll) {
         if (hScale < 1) {
-          vertical.css('height', (hScale * 100) + '%');
+          vertical.css('height', hScale * 100 + '%');
           vertical.css('transform', 'translateY(' + $scroll.scrollTop() / $menu.height() * 100 + '%)');
         }
         if (wScale < 1) {
-          onhoriztal.css('width', (wScale * 100) + '%');
+          onhoriztal.css('width', wScale * 100 + '%');
           onhoriztal.css('transform', 'translateY(' + $scroll.scrollLeft() / $menu.width() * 100 + '%)');
         }
       }
