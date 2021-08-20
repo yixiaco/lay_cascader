@@ -400,12 +400,13 @@ layui.use('layCascader', function () {
     let layCascader = layui.layCascader;
     layCascader({
         props:{
-            multiple: true,
+            multiple: true
         },
         options: {
             elem: '#demo6',
             clearable: true,
             collapseTags: true,
+            minCollapseTagsNumber: 2,
             data: data
         }
     });
@@ -1160,7 +1161,7 @@ layui.use('layCascader', function () {
     }];
     layui.use(['element','code','layCascader'], function () {
         layui.code();
-        let layCascader = layui.layCascader;
+        var layCascader = layui.layCascader;
         layCascader({
             options: {
                 elem: '#demo1',
@@ -1169,7 +1170,7 @@ layui.use('layCascader', function () {
         });
         layCascader({
             props:{
-                expandTrigger: 'hover',
+                expandTrigger: 'hover'
             },
             options: {
                 elem: '#demo2',
@@ -1201,7 +1202,7 @@ layui.use('layCascader', function () {
         });
         layCascader({
             props:{
-                multiple: true,
+                multiple: true
             },
             options: {
                 elem: '#demo6',
