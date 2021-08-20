@@ -587,7 +587,7 @@ layui.define(["jquery"], function (exports) {
       label: 'label',	      //指定选项标签为选项对象的某个属性值	string	—	'label'
       children: 'children',	//指定选项的子选项为选项对象的某个属性值	string	—	'children'
       disabled: 'disabled', //指定选项的禁用为选项对象的某个属性值	string	—	'disabled'
-      leaf: 'leaf',	        //指定选项的叶子节点的标志位为选项对象的某个属性值	string	—	'leaf'
+      leaf: 'leaf'	        //指定选项的叶子节点的标志位为选项对象的某个属性值	string	—	'leaf'
     }, option.props);
     this.data = {
       value: null,
@@ -607,7 +607,7 @@ layui.define(["jquery"], function (exports) {
       down: 'layui-icon-down',
       close: 'layui-icon-close',
       right: 'layui-icon-right',
-      ok: 'layui-icon-ok',
+      ok: 'layui-icon-ok'
     },
     // 初始化
     _init: function () {
@@ -649,13 +649,30 @@ layui.define(["jquery"], function (exports) {
     },
     // 面板定位
     _resetXY: function () {
-      var offset = this.$div.offset();
+      var $div = this.$div;
+      var offset = $div.offset();
       var $panel = this.$panel;
       if ($panel) {
-        $panel.css({
-          top: offset.top + this.$div.height() + 'px',
-          left: offset.left + 'px'
-        });
+        var windowHeight = $(window).height();
+        var panelHeight = $panel.height();
+        var divHeight = $div.height();
+        var boundingClientRect = $div[0].getBoundingClientRect();
+
+        if (windowHeight - (boundingClientRect.top + divHeight) < panelHeight && boundingClientRect.top > panelHeight) {
+          $panel.attr('x-placement', 'top-start')
+          // 向上
+          $panel.css({
+            top: offset.top - 20 - panelHeight + 'px',
+            left: offset.left + 'px'
+          });
+        } else {
+          $panel.attr('x-placement', 'bottom-start')
+          // 向下
+          $panel.css({
+            top: offset.top + divHeight + 'px',
+            left: offset.left + 'px'
+          });
+        }
       }
     },
     get $menus() {
@@ -762,9 +779,9 @@ layui.define(["jquery"], function (exports) {
      * @param parentNode  父级节点
      * @returns {*[]}
      */
-    initNodes(data, level, parentNode) {
+    initNodes: function (data, level, parentNode) {
       var nodes = [];
-      for (let key in data) {
+      for (var key in data) {
         var datum = data[key];
         var node = new Node(datum, this, level, parentNode);
         nodes.push(node);
@@ -778,7 +795,7 @@ layui.define(["jquery"], function (exports) {
      * 设置值
      * @param value
      */
-    setValue(value) {
+    setValue: function (value) {
       if (!value) {
         return;
       }
