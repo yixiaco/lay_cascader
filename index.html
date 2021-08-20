@@ -729,8 +729,8 @@ layui.use('layCascader', function () {
         <tbody>
         <tr>
             <td>change</td>
-            <td>当节点变更时，执行回调.多选时，可能会出现多次回调</td>
-            <td>function(value,Node){}</td>
+            <td>当节点变更时，执行回调<br>多选时，参数是一个数组，且可能会出现多次回调</td>
+            <td>单选：function(value,Node){}<br>多选：function(values,Nodes){}</td>
         </tr>
         <tr>
             <td>disabled</td>
