@@ -566,12 +566,12 @@ layui.define(["jquery"], function (exports) {
       collapseTags: false,  //多选模式下是否折叠Tag
       minCollapseTagsNumber: 1, //最小折叠标签数
       separator: ' / ',     //选项分隔符
-      // filterable: false,    //是否可搜索选项
-      // filterMethod: function (node, keyword) {
-      // }, //自定义搜索逻辑，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中
-      // debounce: 300,        //搜索关键词输入的去抖延迟，毫秒
-      // beforeFilter: function (value) {
-      // },//筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选
+      filterable: false,    //是否可搜索选项
+      filterMethod: function (node, keyword) {
+      }, //自定义搜索逻辑，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中
+      debounce: 300,        //搜索关键词输入的去抖延迟，毫秒
+      beforeFilter: function (value) {
+      },//筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选
       // popperClass: '',      //	自定义浮层类名	string
     }, option.options);
     // 配置
