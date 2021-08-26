@@ -29,12 +29,10 @@
                              <pre class="layui-code">
 &lt;input id="demo1"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        options: {
-            elem: '#demo1',
-            data: data
-        }
+      elem: '#demo1',
+      options: options
     });
 });
                              </pre>
@@ -58,15 +56,13 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo2"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        props:{
-            expandTrigger: 'hover',
-        },
-        options: {
-            elem: '#demo2',
-            data: data
-        }
+      elem: '#demo2',
+      options: options,
+      props: {
+        expandTrigger: 'hover'
+      }
     });
 });
                              </pre>
@@ -92,16 +88,14 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo1_1"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    let demo1_1 = layCascader({
-      options: {
-        elem: '#demo1_1',
-        data: data
-      }
+    var layCascader = layui.layCascader;
+    var demo1_1 = layCascader({
+      elem: '#demo1_1',
+      options: options
     });
     demo1_1.change(function (value, node) {
       layer.msg('value:' + value + ',Node:' + JSON.stringify(node.data));
-    })
+    });
 });
                              </pre>
                                 </div>
@@ -129,20 +123,18 @@ layui.use('layCascader', function () {
 &lt;input id="demo2_1"/&gt;
 &lt;button id="demo2_1_click" type="button" class="layui-btn layui-btn-primary layui-border-blue"&gt;获取当前选中值&lt;/button&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    let demo2_1 = layCascader({
+    var layCascader = layui.layCascader;
+    var demo2_1 = layCascader({
+      elem: '#demo2_1',
+      options: options,
       props: {
         expandTrigger: 'hover'
-      },
-      options: {
-        elem: '#demo2_1',
-        data: data
       }
     });
     $('#demo2_1_click').click(function () {
       // 这里是单选，获取的是一个值，如果是多选则是一个数组
-      let value = demo2_1.getCheckedValues();
-      let node = demo2_1.getCheckedNodes();
+      var value = demo2_1.getCheckedValues();
+      var node = demo2_1.getCheckedNodes();
       if (!value) {
         layer.msg('未选中值');
         return;
@@ -180,207 +172,206 @@ layui.use('layCascader', function () {
 &lt;input id="demo3"/&gt;
 /*本例中，options指定的数组中的第一个元素含有disabled: true键值对，因此是禁用的。在默认情况下，Cascader 会检查数据中每一项的disabled字段是否为true，如果你的数据中表示禁用含义的字段名不为disabled，可以通过props.disabled属性来指定（详见下方 API 表格）。当然，value、label和children这三个字段名也可以通过同样的方式指定。*/
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    layCascader({
-        options: {
-            elem: '#demo3',
-            data: [{
-              value: 'zhinan',
-              label: '指南',
-              disabled: true,
-              children: [{
-                value: 'shejiyuanze',
-                label: '设计原则',
-                children: [{
-                  value: 'yizhi',
-                  label: '一致'
-                }, {
-                  value: 'fankui',
-                  label: '反馈'
-                }, {
-                  value: 'xiaolv',
-                  label: '效率'
-                }, {
-                  value: 'kekong',
-                  label: '可控'
-                }]
-              }, {
-                value: 'daohang',
-                label: '导航',
-                children: [{
-                  value: 'cexiangdaohang',
-                  label: '侧向导航'
-                }, {
-                  value: 'dingbudaohang',
-                  label: '顶部导航'
-                }]
-              }]
-            }, {
-              value: 'zujian',
-              label: '组件',
-              children: [{
-                value: 'basic',
-                label: 'Basic',
-                children: [{
-                  value: 'layout',
-                  label: 'Layout 布局'
-                }, {
-                  value: 'color',
-                  label: 'Color 色彩'
-                }, {
-                  value: 'typography',
-                  label: 'Typography 字体'
-                }, {
-                  value: 'icon',
-                  label: 'Icon 图标'
-                }, {
-                  value: 'button',
-                  label: 'Button 按钮'
-                }]
-              }, {
-                value: 'form',
-                label: 'Form',
-                children: [{
-                  value: 'radio',
-                  label: 'Radio 单选框'
-                }, {
-                  value: 'checkbox',
-                  label: 'Checkbox 多选框'
-                }, {
-                  value: 'input',
-                  label: 'Input 输入框'
-                }, {
-                  value: 'input-number',
-                  label: 'InputNumber 计数器'
-                }, {
-                  value: 'select',
-                  label: 'Select 选择器'
-                }, {
-                  value: 'cascader',
-                  label: 'Cascader 级联选择器'
-                }, {
-                  value: 'switch',
-                  label: 'Switch 开关'
-                }, {
-                  value: 'slider',
-                  label: 'Slider 滑块'
-                }, {
-                  value: 'time-picker',
-                  label: 'TimePicker 时间选择器'
-                }, {
-                  value: 'date-picker',
-                  label: 'DatePicker 日期选择器'
-                }, {
-                  value: 'datetime-picker',
-                  label: 'DateTimePicker 日期时间选择器'
-                }, {
-                  value: 'upload',
-                  label: 'Upload 上传'
-                }, {
-                  value: 'rate',
-                  label: 'Rate 评分'
-                }, {
-                  value: 'form',
-                  label: 'Form 表单'
-                }]
-              }, {
-                value: 'data',
-                label: 'Data',
-                children: [{
-                  value: 'table',
-                  label: 'Table 表格'
-                }, {
-                  value: 'tag',
-                  label: 'Tag 标签'
-                }, {
-                  value: 'progress',
-                  label: 'Progress 进度条'
-                }, {
-                  value: 'tree',
-                  label: 'Tree 树形控件'
-                }, {
-                  value: 'pagination',
-                  label: 'Pagination 分页'
-                }, {
-                  value: 'badge',
-                  label: 'Badge 标记'
-                }]
-              }, {
-                value: 'notice',
-                label: 'Notice',
-                children: [{
-                  value: 'alert',
-                  label: 'Alert 警告'
-                }, {
-                  value: 'loading',
-                  label: 'Loading 加载'
-                }, {
-                  value: 'message',
-                  label: 'Message 消息提示'
-                }, {
-                  value: 'message-box',
-                  label: 'MessageBox 弹框'
-                }, {
-                  value: 'notification',
-                  label: 'Notification 通知'
-                }]
-              }, {
-                value: 'navigation',
-                label: 'Navigation',
-                children: [{
-                  value: 'menu',
-                  label: 'NavMenu 导航菜单'
-                }, {
-                  value: 'tabs',
-                  label: 'Tabs 标签页'
-                }, {
-                  value: 'breadcrumb',
-                  label: 'Breadcrumb 面包屑'
-                }, {
-                  value: 'dropdown',
-                  label: 'Dropdown 下拉菜单'
-                }, {
-                  value: 'steps',
-                  label: 'Steps 步骤条'
-                }]
-              }, {
-                value: 'others',
-                label: 'Others',
-                children: [{
-                  value: 'dialog',
-                  label: 'Dialog 对话框'
-                }, {
-                  value: 'tooltip',
-                  label: 'Tooltip 文字提示'
-                }, {
-                  value: 'popover',
-                  label: 'Popover 弹出框'
-                }, {
-                  value: 'card',
-                  label: 'Card 卡片'
-                }, {
-                  value: 'carousel',
-                  label: 'Carousel 走马灯'
-                }, {
-                  value: 'collapse',
-                  label: 'Collapse 折叠面板'
-                }]
-              }]
-            }, {
-              value: 'ziyuan',
-              label: '资源',
-              children: [{
-                value: 'axure',
-                label: 'Axure Components'
-              }, {
-                value: 'sketch',
-                label: 'Sketch Templates'
-              }, {
-                value: 'jiaohu',
-                label: '组件交互文档'
-              }]
+    var layCascader = layui.layCascader;
+    var options = [{
+        value: 'zhinan',
+        label: '指南',
+        disabled: true,
+        children: [{
+          value: 'shejiyuanze',
+          label: '设计原则',
+          children: [{
+            value: 'yizhi',
+            label: '一致'
+          }, {
+            value: 'fankui',
+            label: '反馈'
+          }, {
+            value: 'xiaolv',
+            label: '效率'
+          }, {
+            value: 'kekong',
+            label: '可控'
+          }]
+        }, {
+          value: 'daohang',
+          label: '导航',
+          children: [{
+            value: 'cexiangdaohang',
+            label: '侧向导航'
+          }, {
+            value: 'dingbudaohang',
+            label: '顶部导航'
+          }]
         }]
-        }
+      }, {
+        value: 'zujian',
+        label: '组件',
+        children: [{
+          value: 'basic',
+          label: 'Basic',
+          children: [{
+            value: 'layout',
+            label: 'Layout 布局'
+          }, {
+            value: 'color',
+            label: 'Color 色彩'
+          }, {
+            value: 'typography',
+            label: 'Typography 字体'
+          }, {
+            value: 'icon',
+            label: 'Icon 图标'
+          }, {
+            value: 'button',
+            label: 'Button 按钮'
+          }]
+        }, {
+          value: 'form',
+          label: 'Form',
+          children: [{
+            value: 'radio',
+            label: 'Radio 单选框'
+          }, {
+            value: 'checkbox',
+            label: 'Checkbox 多选框'
+          }, {
+            value: 'input',
+            label: 'Input 输入框'
+          }, {
+            value: 'input-number',
+            label: 'InputNumber 计数器'
+          }, {
+            value: 'select',
+            label: 'Select 选择器'
+          }, {
+            value: 'cascader',
+            label: 'Cascader 级联选择器'
+          }, {
+            value: 'switch',
+            label: 'Switch 开关'
+          }, {
+            value: 'slider',
+            label: 'Slider 滑块'
+          }, {
+            value: 'time-picker',
+            label: 'TimePicker 时间选择器'
+          }, {
+            value: 'date-picker',
+            label: 'DatePicker 日期选择器'
+          }, {
+            value: 'datetime-picker',
+            label: 'DateTimePicker 日期时间选择器'
+          }, {
+            value: 'upload',
+            label: 'Upload 上传'
+          }, {
+            value: 'rate',
+            label: 'Rate 评分'
+          }, {
+            value: 'form',
+            label: 'Form 表单'
+          }]
+        }, {
+          value: 'data',
+          label: 'Data',
+          children: [{
+            value: 'table',
+            label: 'Table 表格'
+          }, {
+            value: 'tag',
+            label: 'Tag 标签'
+          }, {
+            value: 'progress',
+            label: 'Progress 进度条'
+          }, {
+            value: 'tree',
+            label: 'Tree 树形控件'
+          }, {
+            value: 'pagination',
+            label: 'Pagination 分页'
+          }, {
+            value: 'badge',
+            label: 'Badge 标记'
+          }]
+        }, {
+          value: 'notice',
+          label: 'Notice',
+          children: [{
+            value: 'alert',
+            label: 'Alert 警告'
+          }, {
+            value: 'loading',
+            label: 'Loading 加载'
+          }, {
+            value: 'message',
+            label: 'Message 消息提示'
+          }, {
+            value: 'message-box',
+            label: 'MessageBox 弹框'
+          }, {
+            value: 'notification',
+            label: 'Notification 通知'
+          }]
+        }, {
+          value: 'navigation',
+          label: 'Navigation',
+          children: [{
+            value: 'menu',
+            label: 'NavMenu 导航菜单'
+          }, {
+            value: 'tabs',
+            label: 'Tabs 标签页'
+          }, {
+            value: 'breadcrumb',
+            label: 'Breadcrumb 面包屑'
+          }, {
+            value: 'dropdown',
+            label: 'Dropdown 下拉菜单'
+          }, {
+            value: 'steps',
+            label: 'Steps 步骤条'
+          }]
+        }, {
+          value: 'others',
+          label: 'Others',
+          children: [{
+            value: 'dialog',
+            label: 'Dialog 对话框'
+          }, {
+            value: 'tooltip',
+            label: 'Tooltip 文字提示'
+          }, {
+            value: 'popover',
+            label: 'Popover 弹出框'
+          }, {
+            value: 'card',
+            label: 'Card 卡片'
+          }, {
+            value: 'carousel',
+            label: 'Carousel 走马灯'
+          }, {
+            value: 'collapse',
+            label: 'Collapse 折叠面板'
+          }]
+        }]
+      }, {
+        value: 'ziyuan',
+        label: '资源',
+        children: [{
+          value: 'axure',
+          label: 'Axure Components'
+        }, {
+          value: 'sketch',
+          label: 'Sketch Templates'
+        }, {
+          value: 'jiaohu',
+          label: '组件交互文档'
+        }]
+      }];
+    layCascader({
+        elem: '#demo3',
+        options: options
     });
 });
                              </pre>
@@ -411,13 +402,11 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo4"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        options: {
-            elem: '#demo4',
-            clearable: true,
-            data: data
-        }
+      elem: '#demo4',
+      clearable: true,
+      options: options
     });
 });
                              </pre>
@@ -450,16 +439,14 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo5"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        props:{
-            multiple: true
-        },
-        options: {
-            elem: '#demo5',
-            clearable: true,
-            data: data
-        }
+      elem: '#demo5',
+      clearable: true,
+      options: options,
+      props: {
+        multiple: true
+      }
     });
 });
                              </pre>
@@ -485,18 +472,16 @@ layui.use('layCascader', function () {
 //在开启多选模式后，默认情况下会展示所有已选中的选项的Tag，你可以使用collapseTags来折叠Tag
 //默认情况下折叠仅展示一条tag，你可以使用minCollapseTagsNumber来指定最小tag
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        props:{
-            multiple: true
-        },
-        options: {
-            elem: '#demo6',
-            clearable: true,
-            collapseTags: true,
-            minCollapseTagsNumber: 2,
-            data: data
-        }
+      elem: '#demo6',
+      clearable: true,
+      collapseTags: true,
+      minCollapseTagsNumber: 2,
+      options: options,
+      props: {
+        multiple: true
+      }
     });
 });
                              </pre>
@@ -532,16 +517,14 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo7"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        props:{
-            checkStrictly: true
-        },
-        options: {
-            elem: '#demo7',
-            clearable: true,
-            data: data
-        }
+      elem: '#demo7',
+      clearable: true,
+      options: options,
+      props: {
+        checkStrictly: true
+      }
     });
 });
                              </pre>
@@ -565,17 +548,15 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo8"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        props:{
-            multiple: true,
-            checkStrictly: true
-        },
-        options: {
-            elem: '#demo8',
-            clearable: true,
-            data: data
-        }
+      elem: '#demo8',
+      clearable: true,
+      options: options,
+      props: {
+        multiple: true,
+        checkStrictly: true
+      }
     });
 });
                              </pre>
@@ -609,13 +590,11 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo9"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    layCascader({
-        options: {
-            showAllLevels: false,
-            elem: '#demo9',
-            data: data
-        }
+    var layCascader = layui.layCascader;
+     layCascader({
+      elem: '#demo9',
+      showAllLevels: false,
+      options: options
     });
 });
                              </pre>
@@ -631,7 +610,7 @@ layui.use('layCascader', function () {
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
     <legend>可搜索</legend>
 </fieldset>
-<blockquote class="layui-elem-quote">将filterable赋值为true即可打开搜索功能，默认会匹配节点的label或所有父节点的label(由show-all-levels决定)中包含输入值的选项。你也可以用filter-method自定义搜索逻辑，接受一个函数，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中。</blockquote>
+<blockquote class="layui-elem-quote">将filterable赋值为true即可打开搜索功能，默认会匹配节点的label或所有父节点的label(由showAllLevels决定)中包含输入值的选项。你也可以用filterMethod自定义搜索逻辑，接受一个函数，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中。</blockquote>
 
 <div class="layui-bg-gray" style="padding: 30px;">
     <div class="layui-row layui-col-space15">
@@ -648,14 +627,12 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo10"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
-        options: {
-            elem: '#demo10',
-            clearable: true,
-            filterable: true,
-            data: data
-        }
+        elem: '#demo10',
+        clearable: true,
+        filterable: true,
+        options: options
     });
 });
                              </pre>
@@ -679,16 +656,14 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo11"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
+        elem: '#demo11',
+        clearable: true,
+        filterable: true,
+        options: options,
         props:{
             multiple: true
-        },
-        options: {
-            elem: '#demo11',
-            clearable: true,
-            filterable: true,
-            data: data
         }
     });
 });
@@ -703,95 +678,7 @@ layui.use('layCascader', function () {
     </div>
 </div>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-    <legend>props</legend>
-</fieldset>
-<div class="layui-form" style="margin: 0 40px;">
-    <table class="layui-table">
-        <thead>
-        <tr>
-            <th>参数</th>
-            <th>说明</th>
-            <th>类型</th>
-            <th>可选值</th>
-            <th>默认值</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>extendClass</td>
-            <td>继承class样式</td>
-            <td>boolean</td>
-            <td>true / false</td>
-            <td>false</td>
-        </tr>
-        <tr>
-            <td>extendStyle</td>
-            <td>继承style样式</td>
-            <td>boolean</td>
-            <td>true / false</td>
-            <td>false</td>
-        </tr>
-        <tr>
-            <td>expandTrigger</td>
-            <td>次级菜单的展开方式</td>
-            <td>string</td>
-            <td>click / hover</td>
-            <td>'click'</td>
-        </tr>
-        <tr>
-            <td>multiple</td>
-            <td>是否多选</td>
-            <td>boolean</td>
-            <td>true / false</td>
-            <td>false</td>
-        </tr>
-        <tr>
-            <td>checkStrictly</td>
-            <td>是否严格的遵守父子节点不互相关联</td>
-            <td>boolean</td>
-            <td>true / false</td>
-            <td>false</td>
-        </tr>
-        <tr>
-            <td>value</td>
-            <td>指定选项的值为选项对象的某个属性值</td>
-            <td>string</td>
-            <td>-</td>
-            <td>'value'</td>
-        </tr>
-        <tr>
-            <td>label</td>
-            <td>指定选项标签为选项对象的某个属性值</td>
-            <td>string</td>
-            <td>-</td>
-            <td>'label'</td>
-        </tr>
-        <tr>
-            <td>children</td>
-            <td>指定选项的子选项为选项对象的某个属性值</td>
-            <td>string</td>
-            <td>-</td>
-            <td>'children'</td>
-        </tr>
-        <tr>
-            <td>disabled</td>
-            <td>指定选项的禁用为选项对象的某个属性值</td>
-            <td>string</td>
-            <td>-</td>
-            <td>'disabled'</td>
-        </tr>
-        <tr>
-            <td>leaf</td>
-            <td>指定选项的叶子节点的标志位为选项对象的某个属性值</td>
-            <td>string</td>
-            <td>-</td>
-            <td>'leaf'</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-    <legend>options</legend>
+    <legend>Attributes</legend>
 </fieldset>
 <div class="layui-form" style="margin: 0 40px;">
     <table class="layui-table">
@@ -808,7 +695,7 @@ layui.use('layCascader', function () {
         <tr>
             <td>elem</td>
             <td>绑定元素</td>
-            <td>string/dom</td>
+            <td>String/jqueryObject/DOM</td>
             <td>-</td>
             <td>-</td>
         </tr>
@@ -820,7 +707,7 @@ layui.use('layCascader', function () {
             <td>null</td>
         </tr>
         <tr>
-            <td>data</td>
+            <td>options</td>
             <td>可选项数据源，键名可通过 props 属性配置</td>
             <td>Array</td>
             <td>-</td>
@@ -829,42 +716,42 @@ layui.use('layCascader', function () {
         <tr>
             <td>empty</td>
             <td>无匹配选项时的内容</td>
-            <td>string</td>
+            <td>String</td>
             <td>-</td>
             <td>'暂无数据'</td>
         </tr>
         <tr>
             <td>placeholder</td>
             <td>输入框占位文本</td>
-            <td>string</td>
+            <td>String</td>
             <td>-</td>
             <td>'请选择'</td>
         </tr>
         <tr>
             <td>disabled</td>
             <td>是否禁用</td>
-            <td>boolean</td>
+            <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
         </tr>
         <tr>
             <td>clearable</td>
             <td>是否支持清空选项</td>
-            <td>boolean</td>
+            <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
         </tr>
         <tr>
             <td>showAllLevels</td>
             <td>输入框中是否显示选中值的完整路径</td>
-            <td>boolean</td>
+            <td>Boolean</td>
             <td>true / false</td>
             <td>true</td>
         </tr>
         <tr>
             <td>collapseTags</td>
             <td>多选模式下是否折叠Tag</td>
-            <td>boolean</td>
+            <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
         </tr>
@@ -878,14 +765,14 @@ layui.use('layCascader', function () {
         <tr>
             <td>separator</td>
             <td>选项分隔符</td>
-            <td>string</td>
+            <td>String</td>
             <td>-</td>
             <td>' / '</td>
         </tr>
         <tr>
             <td>filterable</td>
             <td>是否可搜索选项</td>
-            <td>boolean</td>
+            <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
         </tr>
@@ -909,6 +796,94 @@ layui.use('layCascader', function () {
             <td>Function</td>
             <td>-</td>
             <td>-</td>
+        </tr>
+        <tr>
+            <td>extendClass</td>
+            <td>继承class样式</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>extendStyle</td>
+            <td>继承style样式</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>Props</legend>
+</fieldset>
+<div class="layui-form" style="margin: 0 40px;">
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>说明</th>
+            <th>类型</th>
+            <th>可选值</th>
+            <th>默认值</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>expandTrigger</td>
+            <td>次级菜单的展开方式</td>
+            <td>String</td>
+            <td>click / hover</td>
+            <td>'click'</td>
+        </tr>
+        <tr>
+            <td>multiple</td>
+            <td>是否多选</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>checkStrictly</td>
+            <td>是否严格的遵守父子节点不互相关联</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>value</td>
+            <td>指定选项的值为选项对象的某个属性值</td>
+            <td>String</td>
+            <td>-</td>
+            <td>'value'</td>
+        </tr>
+        <tr>
+            <td>label</td>
+            <td>指定选项标签为选项对象的某个属性值</td>
+            <td>String</td>
+            <td>-</td>
+            <td>'label'</td>
+        </tr>
+        <tr>
+            <td>children</td>
+            <td>指定选项的子选项为选项对象的某个属性值</td>
+            <td>String</td>
+            <td>-</td>
+            <td>'children'</td>
+        </tr>
+        <tr>
+            <td>disabled</td>
+            <td>指定选项的禁用为选项对象的某个属性值</td>
+            <td>String</td>
+            <td>-</td>
+            <td>'disabled'</td>
+        </tr>
+        <tr>
+            <td>leaf</td>
+            <td>指定选项的叶子节点的标志位为选项对象的某个属性值</td>
+            <td>String</td>
+            <td>-</td>
+            <td>'leaf'</td>
         </tr>
         </tbody>
     </table>
@@ -934,7 +909,7 @@ layui.use('layCascader', function () {
         <tr>
             <td>disabled</td>
             <td>禁用组件</td>
-            <td>boolean</td>
+            <td>Boolean</td>
         </tr>
         <tr>
             <td>blur</td>
@@ -966,7 +941,7 @@ layui.use('layCascader', function () {
 </div>
 <!--您的Layui代码start-->
 <script type="text/javascript">
-  var data = [{
+  var options = [{
     value: 'zhinan',
     label: '指南',
     children: [{
@@ -1161,7 +1136,7 @@ layui.use('layCascader', function () {
       label: '组件交互文档'
     }]
   }];
-  var data2 = [{
+  var options2 = [{
     value: 'zhinan',
     label: '指南',
     disabled: true,
@@ -1364,39 +1339,31 @@ layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     // 默认 click 触发子菜单
     layCascader({
-      options: {
-        elem: '#demo1',
-        data: data
+      elem: '#demo1',
+      options: options
+    });
+    // hover 触发子菜单
+    layCascader({
+      elem: '#demo2',
+      options: options,
+      props: {
+        expandTrigger: 'hover'
       }
     });
     // 默认 click 触发子菜单-监听值变更
     var demo1_1 = layCascader({
-      options: {
-        elem: '#demo1_1',
-        data: data
-      }
+      elem: '#demo1_1',
+      options: options
     });
     demo1_1.change(function (value, node) {
       layer.msg('value:' + value + ',Node:' + JSON.stringify(node.data));
     });
-    // hover 触发子菜单
-    layCascader({
-      props: {
-        expandTrigger: 'hover'
-      },
-      options: {
-        elem: '#demo2',
-        data: data
-      }
-    });
     // hover 触发子菜单 获取当前选中菜单
     var demo2_1 = layCascader({
+      elem: '#demo2_1',
+      options: options,
       props: {
         expandTrigger: 'hover'
-      },
-      options: {
-        elem: '#demo2_1',
-        data: data
       }
     });
     $('#demo2_1_click').click(function () {
@@ -1411,73 +1378,59 @@ layui.use('layCascader', function () {
     });
     // 禁用选项
     layCascader({
-      options: {
-        elem: '#demo3',
-        data: data2
-      }
+      elem: '#demo3',
+      options: options2
     });
     // 可清空
     layCascader({
-      options: {
-        elem: '#demo4',
-        clearable: true,
-        data: data
-      }
+      elem: '#demo4',
+      clearable: true,
+      options: options
     });
     // 多选-默认显示所有Tag
     layCascader({
+      elem: '#demo5',
+      clearable: true,
+      options: options,
       props: {
         multiple: true
-      },
-      options: {
-        elem: '#demo5',
-        clearable: true,
-        data: data
       }
     });
     // 多选-折叠展示Tag
     layCascader({
+      elem: '#demo6',
+      clearable: true,
+      collapseTags: true,
+      minCollapseTagsNumber: 2,
+      options: options,
       props: {
         multiple: true
-      },
-      options: {
-        elem: '#demo6',
-        clearable: true,
-        collapseTags: true,
-        minCollapseTagsNumber: 2,
-        data: data
       }
     });
     // 单选选择任意一级选项
     layCascader({
+      elem: '#demo7',
+      clearable: true,
+      options: options,
       props: {
         checkStrictly: true
-      },
-      options: {
-        elem: '#demo7',
-        clearable: true,
-        data: data
       }
     });
     // 多选选择任意一级选项
     layCascader({
+      elem: '#demo8',
+      clearable: true,
+      options: options,
       props: {
         multiple: true,
         checkStrictly: true
-      },
-      options: {
-        elem: '#demo8',
-        clearable: true,
-        data: data
       }
     });
     // 仅显示最后一级
     layCascader({
-      options: {
-        showAllLevels: false,
-        elem: '#demo9',
-        data: data
-      }
+      elem: '#demo9',
+      showAllLevels: false,
+      options: options
     });
   });
 </script>
