@@ -103,8 +103,9 @@ layui.define(["jquery"], function (exports) {
     },
     /** 叶子节点 */
     get leaf() {
-      if (this.data[this.config.leaf] === true) {
-        return true;
+      var leaf = this.data[this.config.leaf];
+      if (typeof leaf === 'boolean'){
+        return leaf;
       }
       // 如果children不为空,则判断是否是子节点
       if (this.children) {
