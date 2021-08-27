@@ -104,7 +104,7 @@ layui.define(["jquery"], function (exports) {
     /** 叶子节点 */
     get leaf() {
       var leaf = this.data[this.config.leaf];
-      if (typeof leaf === 'boolean'){
+      if (typeof leaf === 'boolean') {
         return leaf;
       }
       // 如果children不为空,则判断是否是子节点
@@ -890,24 +890,25 @@ layui.define(["jquery"], function (exports) {
         event.stopImmediatePropagation();
         event.stopPropagation();
         // 禁止文本选择事件
-        $(document).bind("selectstart", function () {
+        var selectstart = function () {
           return false;
-        });
+        };
+        $(document).bind("selectstart", selectstart);
         var y = event.clientY;
         var scrollTop = scrollbar.scrollTop();
         // 移动事件
-        $(document).bind('mousemove', function (event) {
+        var mousemove = function (event) {
           event.stopImmediatePropagation();
           var number = scrollTop + (event.clientY - y) / hScale;
           scrollbar.scrollTop(number);
-        });
+        };
+        $(document).bind('mousemove', mousemove);
         // 鼠标松开事件
-        $(document).mouseup(function (event) {
+        $(document).one('mouseup', function (event) {
           event.stopPropagation();
           event.stopImmediatePropagation();
-          $(document).off('mousemove');
-          $(document).off('mouseup');
-          $(document).off('selectstart');
+          $(document).off('mousemove', mousemove);
+          $(document).off('selectstart', selectstart);
         });
       });
       // 监听滚动条事件
@@ -1003,12 +1004,11 @@ layui.define(["jquery"], function (exports) {
         self.$div.mouseleave(function () {
           out();
         });
-        self.$icon.click(function (event) {
+        self.$icon.one('click', function (event) {
           event.stopPropagation();
           self.blur(event);
           self.clearCheckedNodes();
           out();
-          self.$icon.off('click');
           self.$icon.off('mouseenter');
           self.$div.off('mouseenter');
           self.$div.off('mouseleave');
@@ -1045,8 +1045,6 @@ layui.define(["jquery"], function (exports) {
       this.visibleChange(false);
       // 聚焦颜色
       this.$input.removeClass('is-focus');
-      // 移除事件
-      $(document).off('click');
     },
     /**
      * 当获得焦点时触发  (event: Event)
@@ -1056,7 +1054,7 @@ layui.define(["jquery"], function (exports) {
       this.showPanel = true;
       var self = this;
       // 点击背景关闭面板
-      $(document).click(function () {
+      $(document).one('click', function () {
         self.blur(event);
       });
       // 重新定位面板

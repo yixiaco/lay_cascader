@@ -29,7 +29,7 @@
                              <pre class="layui-code">
 &lt;input id="demo1"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         options: {
             elem: '#demo1',
@@ -58,7 +58,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo2"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         props:{
             expandTrigger: 'hover',
@@ -92,8 +92,8 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo1_1"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    let demo1_1 = layCascader({
+    var layCascader = layui.layCascader;
+    var demo1_1 = layCascader({
       options: {
         elem: '#demo1_1',
         data: data
@@ -129,8 +129,8 @@ layui.use('layCascader', function () {
 &lt;input id="demo2_1"/&gt;
 &lt;button id="demo2_1_click" type="button" class="layui-btn layui-btn-primary layui-border-blue"&gt;获取当前选中值&lt;/button&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
-    let demo2_1 = layCascader({
+    var layCascader = layui.layCascader;
+    var demo2_1 = layCascader({
       props: {
         expandTrigger: 'hover'
       },
@@ -141,8 +141,8 @@ layui.use('layCascader', function () {
     });
     $('#demo2_1_click').click(function () {
       // 这里是单选，获取的是一个值，如果是多选则是一个数组
-      let value = demo2_1.getCheckedValues();
-      let node = demo2_1.getCheckedNodes();
+      var value = demo2_1.getCheckedValues();
+      var node = demo2_1.getCheckedNodes();
       if (!value) {
         layer.msg('未选中值');
         return;
@@ -180,7 +180,7 @@ layui.use('layCascader', function () {
 &lt;input id="demo3"/&gt;
 /*本例中，options指定的数组中的第一个元素含有disabled: true键值对，因此是禁用的。在默认情况下，Cascader 会检查数据中每一项的disabled字段是否为true，如果你的数据中表示禁用含义的字段名不为disabled，可以通过props.disabled属性来指定（详见下方 API 表格）。当然，value、label和children这三个字段名也可以通过同样的方式指定。*/
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         options: {
             elem: '#demo3',
@@ -411,7 +411,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo4"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         options: {
             elem: '#demo4',
@@ -450,7 +450,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo5"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         props:{
             multiple: true
@@ -485,7 +485,7 @@ layui.use('layCascader', function () {
 //在开启多选模式后，默认情况下会展示所有已选中的选项的Tag，你可以使用collapseTags来折叠Tag
 //默认情况下折叠仅展示一条tag，你可以使用minCollapseTagsNumber来指定最小tag
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         props:{
             multiple: true
@@ -532,7 +532,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo7"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         props:{
             checkStrictly: true
@@ -565,7 +565,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo8"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         props:{
             multiple: true,
@@ -609,7 +609,7 @@ layui.use('layCascader', function () {
                              <pre class="layui-code">
 &lt;input id="demo9"/&gt;
 layui.use('layCascader', function () {
-    let layCascader = layui.layCascader;
+    var layCascader = layui.layCascader;
     layCascader({
         options: {
             showAllLevels: false,
@@ -1267,7 +1267,7 @@ layui.use('layCascader', function () {
       }
     });
     // 默认 click 触发子菜单-监听值变更
-    let demo1_1 = layCascader({
+    var demo1_1 = layCascader({
       options: {
         elem: '#demo1_1',
         data: data
@@ -1287,7 +1287,7 @@ layui.use('layCascader', function () {
       }
     });
     // hover 触发子菜单 获取当前选中菜单
-    let demo2_1 = layCascader({
+    var demo2_1 = layCascader({
       props: {
         expandTrigger: 'hover'
       },
@@ -1298,8 +1298,8 @@ layui.use('layCascader', function () {
     });
     $('#demo2_1_click').click(function () {
       // 这里是单选，获取的是一个值，如果是多选则是一个数组
-      let value = demo2_1.getCheckedValues();
-      let node = demo2_1.getCheckedNodes();
+      var value = demo2_1.getCheckedValues();
+      var node = demo2_1.getCheckedNodes();
       if (!value) {
         layer.msg('未选中值');
         return;
