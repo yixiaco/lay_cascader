@@ -598,6 +598,8 @@ layui.define(["jquery"], function (exports) {
     };
     this.showPanel = false;
     this._init();
+    // 值变更事件
+    this.changeEvent = [];
   }
 
   Cascader.prototype = {
@@ -724,9 +726,18 @@ layui.define(["jquery"], function (exports) {
         this.$tags = $('<div class="el-cascader__tags"><!----></div>');
         this.$div.append(this.$tags);
       }
+      this._initHideElement($e);
+      // 替换元素
       $e.replaceWith(this.$div);
-      this.$icon = this.$div.find('i');
+      this.$icon = this.$input.find('i');
       this.disabled(this.config.disabled);
+    },
+    _initHideElement: function ($e) {
+      // 保存原始元素
+      var $ec = $e.clone();
+      this.$ec = $ec;
+      $ec.hide();
+      $e.before($ec);
     },
     // 初始化面板(panel(1))
     _initPanel: function () {
@@ -803,8 +814,10 @@ layui.define(["jquery"], function (exports) {
       if (!value) {
         return;
       }
-      // 清空值
-      this.clearCheckedNodes();
+      if (this.data.value || this.data.checkedValue.length > 0) {
+        // 清空值
+        this.clearCheckedNodes();
+      }
       var nodes = this.getNodes(this.data.nodes);
       var checkStrictly = this.props.checkStrictly;
       var multiple = this.props.multiple;
@@ -931,11 +944,11 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       if (!multiple) {
         if (showAllLevels) {
-          $inputRow.val(path.map(function (node) {
+          $inputRow.attr('value', path.map(function (node) {
             return node.label;
           }).join(separator));
         } else {
-          $inputRow.val(path[path.length - 1].label);
+          $inputRow.attr('value', path[path.length - 1].label);
         }
       } else {
         // 复选框
@@ -1035,6 +1048,24 @@ layui.define(["jquery"], function (exports) {
      * @param node  节点
      */
     change: function (value, node) {
+      var multiple = this.props.multiple;
+      if (multiple) {
+        if (value && value.length > 0) {
+          this.$ec.attr('value', JSON.stringify(value));
+          // this.$ec.val(JSON.stringify(value));
+        } else {
+          this.$ec.removeAttr('value');
+          // this.$ec.val('');
+        }
+      } else {
+        this.$ec.attr('value', value || "");
+        // this.$ec.val(value);
+      }
+      this.changeEvent.forEach(function (callback) {
+        if (typeof callback === 'function') {
+          callback(value, node);
+        }
+      });
     },
     /**
      * 当失去焦点时触发  (event: Event)
@@ -1115,16 +1146,15 @@ layui.define(["jquery"], function (exports) {
       var $menus = this.$menus;
       if ($menus) {
         this._fillingPath([]);
+        var $lis = $($menus[$menus.length - 1]).find('li');
         if (multiple) {
           this.change(this.data.checkedValue, []);
         } else {
+          $lis.find('.' + this.icons.ok).remove();
+          // 移除选中样式
+          $lis.removeClass('is-active');
           this.change(this.data.value, []);
         }
-        var $lis = $($menus[$menus.length - 1]).find('li');
-        $lis.find('.' + this.icons.ok).remove();
-
-        // 移除选中样式
-        this.$panel.find('.is-active').removeClass('is-active');
         // 单选样式
         this.$panel.find('.is-checked').removeClass('is-checked');
         // 移除所有选中颜色
@@ -1148,7 +1178,7 @@ layui.define(["jquery"], function (exports) {
        * @param callback  function(value,node){}
        */
       change: function (callback) {
-        self.change = callback;
+        self.changeEvent.push(callback);
       },
       /**
        * 禁用组件
