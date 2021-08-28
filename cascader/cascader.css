@@ -2,6 +2,11 @@
     font-size: 12px;
 }
 
+/*layui from verify*/
+.layui-form-danger+.el-cascader .el-input__inner{
+    border-color: #FF5722!important;
+}
+
 /*弹出面板*/
 .el-popper .popper__arrow,.el-popper .popper__arrow:after {
     position: absolute;
