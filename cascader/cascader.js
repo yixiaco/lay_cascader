@@ -812,7 +812,7 @@ layui.define(["jquery"], function (exports) {
       if (!value) {
         return;
       }
-      if (!this.data.value || this.data.checkedValue.length > 0) {
+      if (this.data.value || this.data.checkedValue.length > 0) {
         // 清空值
         this.clearCheckedNodes();
       }
