@@ -715,9 +715,12 @@ layui.use('layCascader', function () {
 layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
+      props: {
+        checkStrictly: true
+      },
       options: {
         elem: '#danXuanHuiXian2',
-        value: 'dingbudaohang',
+        value: 'shejiyuanze',
         data: data
       }
     });
@@ -746,11 +749,12 @@ layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
       props: {
-        multiple: true
+        multiple: true,
+        checkStrictly: true
       },
       options: {
         elem: '#duoXuanHuiXian2',
-        value: ['dingbudaohang', 'layout'],
+        value: ['shejiyuanze', 'layout'],
         data: data
       }
     });
