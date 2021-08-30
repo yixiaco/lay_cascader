@@ -36,12 +36,13 @@ layui cascader 仿element-ui级联选择器
 
 ## Event
 
-| 方法名            | 说明                                                         | 参数                                                        |
-| :---------------- | :----------------------------------------------------------- | :---------------------------------------------------------- |
+| 方法名            | 说明                                                         | 参数                                                         |
+| :---------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 单选：Object/String/Number<br>多选：Array                    |
 | change            | 当节点变更时，执行回调 <br>多选时，参数是一个数组，且可能会出现多次回调 | 单选：function(value,Node){} <br>多选：function(values,Nodes){} |
-| disabled          | 禁用组件                                                     | boolean                                                     |
-| blur              | 收起面板                                                     | -                                                           |
-| focus             | 展开面板                                                     | -                                                           |
-| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                           |
-| getCheckedValues  | 获取选中的值                                                 | -                                                           |
-| clearCheckedNodes | 清空选中的节点                                               | -                                                           |
+| disabled          | 禁用组件                                                     | boolean                                                      |
+| blur              | 收起面板                                                     | -                                                            |
+| focus             | 展开面板                                                     | -                                                            |
+| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                            |
+| getCheckedValues  | 获取选中的值                                                 | -                                                            |
+| clearCheckedNodes | 清空选中的节点                                               | -                                                            |

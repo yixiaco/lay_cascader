@@ -966,6 +966,11 @@ layui.use('layCascader', function () {
         </thead>
         <tbody>
         <tr>
+            <td>setValue</td>
+            <td>覆盖当前值.单选时传对象，多选时传数组</td>
+            <td>单选：Object/String/Number<br>多选：Array</td>
+        </tr>
+        <tr>
             <td>change</td>
             <td>当节点变更时，执行回调<br>多选时，参数是一个数组，且可能会出现多次回调</td>
             <td>单选：function(value,Node){}<br>多选：function(values,Nodes){}</td>
