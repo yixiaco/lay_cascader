@@ -703,7 +703,7 @@ layui.use('layCascader', function () {
       options: {
         elem: '#danXuanHuiXian',
         value: 'dingbudaohang',
-        data: data
+        options: options
       }
     });
 });
@@ -736,7 +736,7 @@ layui.use('layCascader', function () {
       options: {
         elem: '#duoXuanHuiXian',
         value: ['dingbudaohang', 'layout'],
-        data: data
+        options: options
       }
     });
 });
@@ -768,7 +768,7 @@ layui.use('layCascader', function () {
       options: {
         elem: '#danXuanHuiXian2',
         value: 'dingbudaohang',
-        data: data
+        options: options
       }
     });
 });
@@ -801,7 +801,7 @@ layui.use('layCascader', function () {
       options: {
         elem: '#duoXuanHuiXian2',
         value: ['dingbudaohang', 'layout'],
-        data: data
+        options: options
       }
     });
 });
@@ -1572,33 +1572,27 @@ layui.use('layCascader', function () {
     });
     // 单选回显
     layCascader({
-      options: {
-        elem: '#danXuanHuiXian',
-        value: 'dingbudaohang',
-        data: data
-      }
+      elem: '#danXuanHuiXian',
+      value: 'dingbudaohang',
+      options: options
     });
     // 多选回显
     layCascader({
       props: {
         multiple: true
       },
-      options: {
-        elem: '#duoXuanHuiXian',
-        value: ['dingbudaohang', 'layout'],
-        data: data
-      }
+      elem: '#duoXuanHuiXian',
+      value: ['dingbudaohang', 'layout'],
+      options: options
     });
     // 单选无关联回显
     layCascader({
       props: {
         checkStrictly: true
       },
-      options: {
-        elem: '#danXuanHuiXian2',
-        value: 'shejiyuanze',
-        data: data
-      }
+      elem: '#danXuanHuiXian2',
+      value: 'shejiyuanze',
+      options: options
     });
     // 多选无关联回显
     layCascader({
@@ -1606,11 +1600,9 @@ layui.use('layCascader', function () {
         multiple: true,
         checkStrictly: true
       },
-      options: {
-        elem: '#duoXuanHuiXian2',
-        value: ['shejiyuanze', 'layout'],
-        data: data
-      }
+      elem: '#duoXuanHuiXian2',
+      value: ['shejiyuanze', 'layout'],
+      options: options
     });
   });
 </script>
