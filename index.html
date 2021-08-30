@@ -700,11 +700,9 @@ layui.use('layCascader', function () {
 layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
-      options: {
-        elem: '#danXuanHuiXian',
-        value: 'dingbudaohang',
-        options: options
-      }
+      elem: '#danXuanHuiXian',
+      value: 'dingbudaohang',
+      options: options
     });
 });
                              </pre>
@@ -733,11 +731,9 @@ layui.use('layCascader', function () {
       props: {
         multiple: true
       },
-      options: {
-        elem: '#duoXuanHuiXian',
-        value: ['dingbudaohang', 'layout'],
-        options: options
-      }
+      elem: '#duoXuanHuiXian',
+      value: ['dingbudaohang', 'layout'],
+      options: options
     });
 });
                              </pre>
@@ -765,11 +761,12 @@ layui.use('layCascader', function () {
 layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
-      options: {
-        elem: '#danXuanHuiXian2',
-        value: 'dingbudaohang',
-        options: options
-      }
+      props: {
+        checkStrictly: true
+      },
+      elem: '#danXuanHuiXian2',
+      value: 'shejiyuanze',
+      options: options
     });
 });
                              </pre>
@@ -796,13 +793,12 @@ layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
       props: {
-        multiple: true
+        multiple: true,
+        checkStrictly: true
       },
-      options: {
-        elem: '#duoXuanHuiXian2',
-        value: ['dingbudaohang', 'layout'],
-        options: options
-      }
+      elem: '#duoXuanHuiXian2',
+      value: ['shejiyuanze', 'layout'],
+      options: options
     });
 });
                              </pre>
