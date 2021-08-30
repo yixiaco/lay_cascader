@@ -77,8 +77,6 @@ layui.define(["jquery"], function (exports) {
           $checkbox.removeClass('is-indeterminate');
         }
       }
-      // 填充路径
-      cascader._fillingPath(cascader.data.checkedNodePaths);
       if (length !== cascader.data.checkedValue.length) {
         cascader.change(cascader.data.checkedValue, cascader.data.checkedNodePaths);
       }
@@ -358,7 +356,6 @@ layui.define(["jquery"], function (exports) {
         cascader.data.value = value;
         cascader.data.activeNode = this;
         // 填充路径
-        cascader._fillingPath(cascader.data.activeNode.path);
         cascader.change(cascader.data.value, cascader.data.activeNode);
         cascader._setClear();
       }
@@ -888,7 +885,6 @@ layui.define(["jquery"], function (exports) {
           var node = filter[0];
           this.data.value = node.value;
           this.data.activeNode = node;
-          this._fillingPath(node.path);
           this.change(this.data.value, this.data.activeNode);
           this._setClear();
         }
@@ -1098,9 +1094,13 @@ layui.define(["jquery"], function (exports) {
           this.$ec.removeAttr('value');
           // this.$ec.val('');
         }
+        // 填充路径
+        this._fillingPath(node);
       } else {
         this.$ec.attr('value', value || "");
         // this.$ec.val(value);
+        // 填充路径
+        this._fillingPath(node && node.path || []);
       }
       this.changeEvent.forEach(function (callback) {
         if (typeof callback === 'function') {
@@ -1186,7 +1186,6 @@ layui.define(["jquery"], function (exports) {
       var multiple = this.props.multiple;
       var $menus = this.$menus;
       if ($menus) {
-        this._fillingPath([]);
         var $lis = $($menus[$menus.length - 1]).find('li');
         if (multiple) {
           this.change(this.data.checkedValue, []);
@@ -1194,7 +1193,7 @@ layui.define(["jquery"], function (exports) {
           $lis.find('.' + this.icons.ok).remove();
           // 移除选中样式
           $lis.removeClass('is-active');
-          this.change(this.data.value, []);
+          this.change(this.data.value, null);
         }
         // 单选样式
         this.$panel.find('.is-checked').removeClass('is-checked');
@@ -1214,6 +1213,13 @@ layui.define(["jquery"], function (exports) {
   var thisCas = function () {
     var self = this;
     return {
+      /**
+       * 覆盖当前值
+       * @param value 单选时传对象，多选时传数组
+       */
+      setValue: function (value) {
+        self.setValue(value);
+      },
       /**
        * 当节点变更时，执行回调
        * @param callback  function(value,node){}
