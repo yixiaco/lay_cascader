@@ -677,6 +677,144 @@ layui.use('layCascader', function () {
         </div>
     </div>
 </div>
+
+<!--回显-->
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>回显</legend>
+</fieldset>
+
+<div class="layui-bg-gray" style="padding: 30px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">单选回显</div>
+                    <div style="margin: 10px 20px;"><input id="danXuanHuiXian"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="danXuanHuiXian"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      options: {
+        elem: '#danXuanHuiXian',
+        value: 'dingbudaohang',
+        data: data
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">多选回显</div>
+                    <div style="margin: 10px 20px;"><input id="duoXuanHuiXian"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="duoXuanHuiXian"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      props: {
+        multiple: true
+      },
+      options: {
+        elem: '#duoXuanHuiXian',
+        value: ['dingbudaohang', 'layout'],
+        data: data
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">单选无关联回显</div>
+                    <div style="margin: 10px 20px;"><input id="danXuanHuiXian2"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="danXuanHuiXian2"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      options: {
+        elem: '#danXuanHuiXian2',
+        value: 'dingbudaohang',
+        data: data
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">多选无关联回显</div>
+                    <div style="margin: 10px 20px;"><input id="duoXuanHuiXian2"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="duoXuanHuiXian2"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      props: {
+        multiple: true
+      },
+      options: {
+        elem: '#duoXuanHuiXian2',
+        value: ['dingbudaohang', 'layout'],
+        data: data
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
     <legend>Attributes</legend>
 </fieldset>
@@ -1431,6 +1569,48 @@ layui.use('layCascader', function () {
       elem: '#demo9',
       showAllLevels: false,
       options: options
+    });
+    // 单选回显
+    layCascader({
+      options: {
+        elem: '#danXuanHuiXian',
+        value: 'dingbudaohang',
+        data: data
+      }
+    });
+    // 多选回显
+    layCascader({
+      props: {
+        multiple: true
+      },
+      options: {
+        elem: '#duoXuanHuiXian',
+        value: ['dingbudaohang', 'layout'],
+        data: data
+      }
+    });
+    // 单选无关联回显
+    layCascader({
+      props: {
+        checkStrictly: true
+      },
+      options: {
+        elem: '#danXuanHuiXian2',
+        value: 'shejiyuanze',
+        data: data
+      }
+    });
+    // 多选无关联回显
+    layCascader({
+      props: {
+        multiple: true,
+        checkStrictly: true
+      },
+      options: {
+        elem: '#duoXuanHuiXian2',
+        value: ['shejiyuanze', 'layout'],
+        data: data
+      }
     });
   });
 </script>

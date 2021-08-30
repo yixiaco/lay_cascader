@@ -154,6 +154,9 @@ layui.define(["jquery"], function (exports) {
         if (!checkStrictly) {
           // 向上传递
           self._syncTransferParent();
+        } else {
+          // 向上多选非关联传递
+          self._syncTransferCheckStrictlyParent();
         }
         cascader.removeTag(self.value, self);
       });
@@ -206,10 +209,7 @@ layui.define(["jquery"], function (exports) {
       var leaf = this.leaf;
       var self = this;
       var cascader = this.cascader;
-      if (value === currentValue) {
-        $li.addClass('is-active');
-        $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
-      }
+      var activeNode = this.cascader.data.activeNode;
 
       // 是否禁用
       if (this.disabled) {
@@ -232,6 +232,15 @@ layui.define(["jquery"], function (exports) {
         // 添加下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
       });
+
+      if (self.currentValue && activeNode.path.some(function (node) {
+        return node.value === value;
+      })) {
+        if (self.currentValue === value) {
+          $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
+        }
+        $li.addClass('is-active');
+      }
     },
     /**
      * 单选&&非关联
@@ -465,6 +474,8 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var checked = this.checked;
+      var checkedNodePaths = cascader.data.checkedNodePaths;
+      var selfValue = this.value;
 
       $li.addClass('el-cascader-node is-selectable');
 
@@ -474,9 +485,16 @@ layui.define(["jquery"], function (exports) {
       $li.prepend($checked);
 
       // 渲染
-      if (checked === 1) {
+      var exist = checkedNodePaths.some(function (node) {
+        return node.path.some(function (node) {
+          return node.value === selfValue;
+        })
+      });
+      if (exist) {
         $li.addClass('in-checked-path');
-        this.$checked.find('.el-checkbox__input').addClass('is-checked');
+        if (checked === 1) {
+          this.$checked.find('.el-checkbox__input').addClass('is-checked');
+        }
       }
 
       // 触发下一个节点
@@ -499,11 +517,7 @@ layui.define(["jquery"], function (exports) {
       $checked.click(function (event) {
         event.preventDefault();
         self.checked = self.checked === 0 ? 1 : 0;
-        if (self.checked === 1) {
-          $li.addClass('in-checked-path');
-        } else {
-          $li.removeClass('in-checked-path');
-        }
+        self._syncTransferCheckStrictlyParent();
       });
     },
     /**
@@ -530,6 +544,32 @@ layui.define(["jquery"], function (exports) {
         }
         node.checked = checked;
       });
+    },
+    /**
+     * 多选无关联同步父级节点样式
+     * @private
+     */
+    _syncTransferCheckStrictlyParent: function () {
+      var self = this;
+      var cascader = this.cascader;
+      var checkedNodePaths = cascader.data.checkedNodePaths;
+      // 向上传递
+      self.transferParent(function (transferNode) {
+        var $li = transferNode.$li;
+        if ($li) {
+          // 渲染
+          var exist = checkedNodePaths.some(function (node) {
+            return node.path.some(function (node) {
+              return node.value === transferNode.value;
+            })
+          });
+          if (exist) {
+            $li.addClass('in-checked-path');
+          } else {
+            $li.removeClass('in-checked-path');
+          }
+        }
+      }, true);
     },
     /**
      * 点击li事件
@@ -597,9 +637,10 @@ layui.define(["jquery"], function (exports) {
       activeNode: null
     };
     this.showPanel = false;
-    this._init();
     // 值变更事件
     this.changeEvent = [];
+    // 初始化
+    this._init();
   }
 
   Cascader.prototype = {
