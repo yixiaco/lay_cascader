@@ -1203,6 +1203,10 @@
     font-weight: 700
 }
 
+.el-cascader__suggestion-item .el-icon-check{
+    margin-right: 15px;
+}
+
 .el-cascader__suggestion-item > span {
     margin-right: 10px
 }

@@ -18,6 +18,10 @@ layui cascader 仿element-ui级联选择器
 | collapseTags          | 多选模式下是否折叠Tag                                        | Boolean                 | true/false | false      |
 | minCollapseTagsNumber | 最小折叠标签数                                               | Number                  | -          | 1          |
 | separator             | 选项分隔符                                                   | String                  | -          | ' / '      |
+| filterable            | 是否可搜索选项                                               | Boolean                 | true/false | false      |
+| filterMethod          | 自定义搜索逻辑，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中 | Function                | -          | -          |
+| debounce              | 搜索关键词输入的去抖延迟，毫秒                               | Number                  | -          | 300        |
+| beforeFilter          | 筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选      | Function                | -          | -          |
 | extendClass           | 继承class样式                                                | Boolean                 | true/false | false      |
 | extendStyle           | 继承style样式                                                | Boolean                 | true/false | false      |
 
