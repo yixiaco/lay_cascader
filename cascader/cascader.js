@@ -239,6 +239,7 @@ layui.define(["jquery"], function (exports) {
       var cascader = this.cascader;
       var multiple = this.props.multiple;
       var checkStrictly = this.props.checkStrictly;
+      var parentNode = this.parentNode;
 
       // 是否禁用
       if (this.disabled) {
@@ -267,12 +268,15 @@ layui.define(["jquery"], function (exports) {
         } else {
           if (self.currentValue !== value) {
             if (checkStrictly) {
+              self._syncRadioCheckStrictly();
+            } else {
               self._syncRadio();
             }
+            self.currentValue = value;
+            parentNode.$li && parentNode.$li.click();
             $li.addClass('is-checked');
             $li.append(icon);
           }
-          self.currentValue = value;
           // 关闭面板
           cascader.blur(event);
         }
@@ -309,13 +313,8 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
-        $li.siblings().removeClass('is-active');
-        $li.siblings().find('.' + okIcon).remove();
-        $li.addClass('is-active');
+        self._syncRadio();
         if (leaf) {
-          if (self.currentValue !== value) {
-            $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
-          }
           self.currentValue = value;
           // 关闭面板
           cascader.blur(event);
@@ -331,6 +330,27 @@ layui.define(["jquery"], function (exports) {
           $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
         }
         $li.addClass('is-active');
+      }
+    },
+    /**
+     * 同步单选关联的状态
+     * @private
+     */
+    _syncRadio: function () {
+      var $li = this.$li;
+      var leaf = this.leaf;
+      var fromIcon = this.icons.from;
+      var okIcon = this.icons.ok;
+      if (!$li) {
+        return;
+      }
+      $li.siblings().removeClass('is-active');
+      $li.siblings().find('.' + okIcon).remove();
+      $li.addClass('is-active');
+      if (leaf) {
+        if (this.currentValue !== this.value) {
+          $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
+        }
       }
     },
     /**
@@ -372,7 +392,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $radio.click(function (event) {
         event.preventDefault();
-        self._syncRadio();
+        self._syncRadioCheckStrictly();
         self.currentValue = value;
         // 重新加载一下下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -391,7 +411,7 @@ layui.define(["jquery"], function (exports) {
      * 同步单选非关联的状态
      * @private
      */
-    _syncRadio: function () {
+    _syncRadioCheckStrictly: function () {
       var $radio = this.$radio;
       this.transferParent(function (node) {
         var $li = node.$li;
