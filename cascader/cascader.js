@@ -266,6 +266,9 @@ layui.define(["jquery"], function (exports) {
           }
         } else {
           if (self.currentValue !== value) {
+            if (checkStrictly) {
+              self._syncRadio();
+            }
             $li.addClass('is-checked');
             $li.append(icon);
           }
@@ -347,6 +350,7 @@ layui.define(["jquery"], function (exports) {
       $li.addClass('is-selectable');
       // 任意一级单选
       var $radio = $('<label role="radio" tabindex="0" class="el-radio"><span class="el-radio__input"><span class="el-radio__inner"></span><input type="radio" aria-hidden="true" tabindex="-1" class="el-radio__original" value="' + value + '"></span><span class="el-radio__label"><span></span></span></label>');
+      this.$radio = $radio;
       $li.prepend($radio);
 
       // 触发下一个节点
@@ -368,18 +372,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $radio.click(function (event) {
         event.preventDefault();
-        self.transferParent(function (node) {
-          var $li = node.$li;
-          $li.siblings().find('.el-radio__input').removeClass('is-checked');
-          $li.find('.el-radio__input').removeClass('is-checked');
-          $li.siblings().removeClass('in-active-path');
-          $li.siblings().removeClass('is-active');
-          $li.siblings().removeClass('in-checked-path');
-          $li.addClass('in-active-path');
-          $li.addClass('is-active');
-          $li.addClass('in-checked-path');
-        }, true);
-        $radio.find('.el-radio__input').addClass('is-checked');
+        self._syncRadio();
         self.currentValue = value;
         // 重新加载一下下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -393,6 +386,28 @@ layui.define(["jquery"], function (exports) {
         $li.addClass('is-active');
         $li.addClass('in-checked-path');
       }
+    },
+    /**
+     * 同步单选非关联的状态
+     * @private
+     */
+    _syncRadio: function () {
+      var $radio = this.$radio;
+      this.transferParent(function (node) {
+        var $li = node.$li;
+        if (!$li) {
+          return;
+        }
+        $li.siblings().find('.el-radio__input').removeClass('is-checked');
+        $li.find('.el-radio__input').removeClass('is-checked');
+        $li.siblings().removeClass('in-active-path');
+        $li.siblings().removeClass('is-active');
+        $li.siblings().removeClass('in-checked-path');
+        $li.addClass('in-active-path');
+        $li.addClass('is-active');
+        $li.addClass('in-checked-path');
+      }, true);
+      $radio && $radio.find('.el-radio__input').addClass('is-checked');
     },
     /**
      * 向上传递
