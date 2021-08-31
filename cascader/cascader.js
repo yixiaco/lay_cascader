@@ -780,7 +780,8 @@ layui.define(["jquery"], function (exports) {
     },
     // 初始化面板(panel(1))
     _initPanel: function () {
-      this.$panel = $('<div class="el-popper el-cascader__dropdown" style="position: absolute; z-index: 2056;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
+      // z-index：解决和layer.open默认19891014的冲突
+      this.$panel = $('<div class="el-popper el-cascader__dropdown" style="position: absolute; z-index: 19891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
       this.$panel.appendTo('body');
       this._appendMenu(this.data.nodes, 0);
       this.$panel.click(function (event) {
