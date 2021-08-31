@@ -676,6 +676,73 @@ layui.use('layCascader', function () {
             </div>
         </div>
     </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">单选无关联可搜索</div>
+                    <div style="margin: 10px 20px;"><input id="demo12"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="demo12"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      elem: '#demo12',
+      filterable: true,
+      clearable: true,
+      options: options,
+      props: {
+        checkStrictly: true
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">多选无关联可搜索</div>
+                    <div style="margin: 10px 20px;"><input id="demo13"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="demo13"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      elem: '#demo13',
+      options: options,
+      filterable: true,
+      clearable: true,
+      props: {
+        checkStrictly: true,
+        multiple: true
+      }
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--回显-->
@@ -1570,6 +1637,44 @@ layui.use('layCascader', function () {
       elem: '#demo9',
       showAllLevels: false,
       options: options
+    });
+    // 单选可搜索
+    layCascader({
+      elem: '#demo10',
+      filterable: true,
+      clearable: true,
+      options: options
+    });
+    // 多选可搜索
+    layCascader({
+      elem: '#demo11',
+      options: options,
+      filterable: true,
+      clearable: true,
+      props: {
+        multiple: true
+      }
+    });
+    // 单选无关联可搜索
+    layCascader({
+      elem: '#demo12',
+      filterable: true,
+      clearable: true,
+      options: options,
+      props: {
+        checkStrictly: true
+      }
+    });
+    // 多选无关联可搜索
+    layCascader({
+      elem: '#demo13',
+      options: options,
+      filterable: true,
+      clearable: true,
+      props: {
+        checkStrictly: true,
+        multiple: true
+      }
     });
     // 单选回显
     layCascader({
