@@ -1119,8 +1119,8 @@ layui.define(["jquery"], function (exports) {
         var datum = data[key];
         var node = new Node(datum, this, level, parentNode);
         nodes.push(node);
-        if (datum.children && datum.children.length > 0) {
-          node.setChildren(this.initNodes(datum.children, level + 1, node))
+        if (node.children && node.children.length > 0) {
+          node.setChildren(this.initNodes(node.children, level + 1, node))
         }
       }
       return nodes;
