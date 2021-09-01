@@ -2,9 +2,14 @@
     font-size: 12px;
 }
 
-/*layui from verify*/
+/* layui表单验证不通过颜色 */
 .layui-form-danger+.el-cascader .el-input__inner{
     border-color: #FF5722!important;
+}
+
+/* 在layui表单中宽度自动撑满 */
+.layui-form .el-cascader{
+    width: 100%;
 }
 
 /*弹出面板*/
