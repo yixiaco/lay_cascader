@@ -1263,13 +1263,14 @@ layui.define(["jquery"], function (exports) {
       var placeholder = this.config.placeholder;
       var self = this;
       if (!multiple) {
-        var path = this.data.activeNode && this.data.activeNode.path || [];
+        var activeNode = this.data.activeNode;
+        var path = activeNode && activeNode.path || [];
         if (showAllLevels) {
           this._$inputRowSetValue(path.map(function (node) {
             return node.label;
           }).join(separator));
         } else {
-          this._$inputRowSetValue(path[path.length - 1].label);
+          this._$inputRowSetValue(activeNode && activeNode.label || "");
         }
       } else {
         // 复选框
