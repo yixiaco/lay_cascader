@@ -846,9 +846,15 @@ layui.define(["jquery"], function (exports) {
       var $panel = this.$panel;
       if ($panel) {
         var windowHeight = $(window).height();
+        var windowWidth = $(window).width();
         var panelHeight = $panel.height();
+        var panelWidth = $panel.width();
         var divHeight = $div.height();
         var boundingClientRect = $div[0].getBoundingClientRect();
+        var $arrow = $panel.find('.popper__arrow');
+
+        // 距离右边界的偏差值
+        var offsetDiff = Math.min(windowWidth - boundingClientRect.x - panelWidth - 5, 0);
 
         var bottomHeight = windowHeight - (boundingClientRect.top + divHeight);
         if (bottomHeight < panelHeight && boundingClientRect.top > panelHeight + 20) {
@@ -856,16 +862,20 @@ layui.define(["jquery"], function (exports) {
           // 向上
           $panel.css({
             top: offset.top - 20 - panelHeight + 'px',
-            left: offset.left + 'px'
+            left: offset.left + offsetDiff + 'px'
           });
         } else {
-          $panel.attr('x-placement', 'bottom-start')
+          $panel.attr('x-placement', 'bottom-start');
+          // 距离底部边界的偏差值
+          var yOffset = Math.max(panelHeight - (windowHeight - boundingClientRect.y - divHeight - 15), 0);
           // 向下
           $panel.css({
-            top: offset.top + divHeight + 'px',
-            left: offset.left + 'px'
+            top: offset.top + divHeight - yOffset + 'px',
+            left: offset.left + offsetDiff + 'px'
           });
         }
+        // 箭头偏移
+        $arrow.css("left", 35 - offsetDiff + "px");
       }
     },
     get $menus() {
@@ -1048,6 +1058,8 @@ layui.define(["jquery"], function (exports) {
       this._appendLi($div, nodes);
       // 渲染滚动条
       this._initScrollbar($div);
+      // 重新定位面板
+      this._resetXY();
     },
     /**
      * 添加细项(panel(1)->menu(n)->li(n))
