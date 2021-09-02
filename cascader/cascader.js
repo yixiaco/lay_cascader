@@ -845,8 +845,8 @@ layui.define(["jquery"], function (exports) {
       var offset = $div.offset();
       var $panel = this.$panel;
       if ($panel) {
-        var windowHeight = $(window).height();
-        var windowWidth = $(window).width();
+        var windowHeight = window.innerHeight;
+        var windowWidth = window.innerWidth;
         var panelHeight = $panel.height();
         var panelWidth = $panel.width();
         var divHeight = $div.height();
