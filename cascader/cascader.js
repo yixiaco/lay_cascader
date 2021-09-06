@@ -23,6 +23,7 @@ layui.define(["jquery"], function (exports) {
     this.level = level;
     this.parentNode = parentNode;
     this.icons = cascader.icons;
+    //该节点是否被选中 0:未选中，1：选中，2：不定
     this._checked = 0;
   }
 
@@ -31,59 +32,6 @@ layui.define(["jquery"], function (exports) {
     /** 最顶级父节点 */
     get topParentNode() {
       return !this.parentNode && this || this.topParentNode;
-    },
-    /** 该节点是否被选中 0:未选中，1：选中，2：不定*/
-    get checked() {
-      return this._checked;
-    },
-    /**
-     * 复选框的值，此处不会自动同步父节点的状态，需要自行处理
-     * @param checked 0:未选中，1：选中，2：不定
-     */
-    set checked(checked) {
-      if (this._checked === checked) {
-        return;
-      }
-      this._checked = checked;
-      var value = this.value;
-      var cascader = this.cascader;
-      var checkStrictly = this.props.checkStrictly;
-      var leaf = this.leaf;
-      var index = cascader.data.checkedValue.indexOf(value);
-      var length = cascader.data.checkedValue.length;
-      var $checkbox;
-      if (checked) {
-        if (checkStrictly || leaf) {
-          if (length === 0) {
-            cascader._setClear();
-          }
-          cascader.data.checkedValue.push(value);
-          cascader.data.checkedNodePaths.push(this);
-        }
-        if (this.$checked) {
-          $checkbox = this.$checked.find('.el-checkbox__input');
-          if (checked === 1) {
-            $checkbox.removeClass('is-indeterminate');
-            $checkbox.addClass('is-checked');
-          } else if (checked === 2) {
-            $checkbox.removeClass('is-checked');
-            $checkbox.addClass('is-indeterminate');
-          }
-        }
-      } else {
-        if (checkStrictly || leaf) {
-          cascader.data.checkedValue.splice(index, 1);
-          cascader.data.checkedNodePaths.splice(index, 1);
-        }
-        if (this.$checked) {
-          $checkbox = this.$checked.find('.el-checkbox__input');
-          $checkbox.removeClass('is-checked');
-          $checkbox.removeClass('is-indeterminate');
-        }
-      }
-      if (length !== cascader.data.checkedValue.length) {
-        cascader.change(cascader.data.checkedValue, cascader.data.checkedNodePaths);
-      }
     },
     /** 子节点 */
     childrenNode: undefined,
@@ -139,7 +87,6 @@ layui.define(["jquery"], function (exports) {
     /** 输入框的tag标签 */
     get $tag() {
       var cascader = this.cascader;
-      var checkStrictly = this.props.checkStrictly;
       var showAllLevels = this.config.showAllLevels;
 
       var label = this.getPathLabel(showAllLevels);
@@ -147,14 +94,7 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       $tag.find('i').click(function (event) {
         event.stopPropagation();
-        self.checked = 0;
-        if (!checkStrictly) {
-          // 向上传递
-          self._syncTransferParent();
-        } else {
-          // 向上多选非关联传递
-          self._syncTransferCheckStrictlyParent();
-        }
+        self.selectedValue();
         cascader.removeTag(self.value, self);
       });
       return $tag;
@@ -242,45 +182,20 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var multiple = this.props.multiple;
-      var checkStrictly = this.props.checkStrictly;
-      var parentNode = this.parentNode;
-
-      // 是否禁用
-      if (this.disabled) {
-        $li.addClass('is-disabled');
-        return;
-      }
 
       var icon = '<i class="' + fromIcon + ' ' + okIcon + ' el-icon-check"></i>';
       $li.click(function (event) {
         event.stopPropagation();
+        self.selectedValue();
         if (multiple) {
           if (self.currentCheckedValue.indexOf(value) === -1) {
-            $li.addClass('is-checked');
-            $li.append(icon);
-          } else {
             $li.removeClass('is-checked');
             $li.find('.el-icon-check').remove();
-          }
-          self.checked = self.checked === 0 ? 1 : 0;
-          if (checkStrictly) {
-            self._syncTransferCheckStrictlyParent();
           } else {
-            // 向上传递
-            self._syncTransferParent();
-          }
-        } else {
-          if (self.currentValue !== value) {
-            if (checkStrictly) {
-              self._syncRadioCheckStrictly();
-            } else {
-              self._syncRadio();
-            }
-            self.currentValue = value;
-            parentNode.$li && parentNode.$li.click();
             $li.addClass('is-checked');
             $li.append(icon);
           }
+        } else {
           // 关闭面板
           cascader.blur(event);
         }
@@ -319,11 +234,13 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
-        self._syncRadio();
         if (leaf) {
-          self.currentValue = value;
+          self.selectedValue();
           // 关闭面板
           cascader.blur(event);
+        } else {
+          $li.siblings().removeClass('in-active-path');
+          $li.addClass('in-active-path');
         }
         // 添加下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -336,27 +253,7 @@ layui.define(["jquery"], function (exports) {
           $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
         }
         $li.addClass('is-active');
-      }
-    },
-    /**
-     * 同步单选关联的状态
-     * @private
-     */
-    _syncRadio: function () {
-      var $li = this.$li;
-      var leaf = this.leaf;
-      var fromIcon = this.icons.from;
-      var okIcon = this.icons.ok;
-      if (!$li) {
-        return;
-      }
-      $li.siblings().removeClass('is-active');
-      $li.siblings().find('.' + okIcon).remove();
-      $li.addClass('is-active');
-      if (leaf) {
-        if (this.currentValue !== this.value) {
-          $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
-        }
+        $li.addClass('in-checked-path');
       }
     },
     /**
@@ -398,8 +295,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $radio.click(function (event) {
         event.preventDefault();
-        self._syncRadioCheckStrictly();
-        self.currentValue = value;
+        self.selectedValue();
         // 重新加载一下下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
       });
@@ -414,26 +310,112 @@ layui.define(["jquery"], function (exports) {
       }
     },
     /**
-     * 同步单选非关联的状态
+     * 多选&&关联
      * @private
      */
-    _syncRadioCheckStrictly: function () {
-      var $radio = this.$radio;
-      this.transferParent(function (node) {
-        var $li = node.$li;
-        if (!$li) {
-          return;
+    _renderMultiple: function () {
+      var $li = this.$li;
+      var level = this.level;
+      var childrenNode = this.childrenNode;
+      var leaf = this.leaf;
+      var self = this;
+      var cascader = this.cascader;
+      var checked = this._checked;
+
+      $li.addClass('el-cascader-node');
+
+      // 多选框
+      var $checked = $('<label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false" class="el-checkbox__original" value=""></span></label>');
+      this.$checked = $checked;
+      $li.prepend($checked);
+
+      // 渲染
+      if (checked === 1) {
+        this.$checked.find('.el-checkbox__input').addClass('is-checked');
+      } else if (checked === 2) {
+        this.$checked.find('.el-checkbox__input').addClass('is-indeterminate');
+      }
+
+      if (this.disabled) {
+        $li.addClass('is-disabled');
+        $checked.addClass('is-disabled');
+        $checked.find('.el-checkbox__input').addClass('is-disabled');
+        return;
+      }
+
+      // 触发下一个节点
+      this._liClick(function (event) {
+        event.stopPropagation();
+        if (!leaf) {
+          $li.siblings().removeClass('in-active-path');
+          $li.addClass('in-active-path');
         }
-        $li.siblings().find('.el-radio__input').removeClass('is-checked');
-        $li.find('.el-radio__input').removeClass('is-checked');
-        $li.siblings().removeClass('in-active-path');
-        $li.siblings().removeClass('is-active');
-        $li.siblings().removeClass('in-checked-path');
-        $li.addClass('in-active-path');
-        $li.addClass('is-active');
+        // 添加下级菜单
+        cascader._appendMenu(childrenNode, level + 1, self);
+      });
+
+      // 选中事件
+      $checked.click(function (event) {
+        event.preventDefault();
+        self.selectedValue();
+      });
+    },
+    /**
+     * 多选&&非关联
+     * @private
+     */
+    _renderMultipleCheckStrictly: function () {
+      var $li = this.$li;
+      var level = this.level;
+      var childrenNode = this.childrenNode;
+      var leaf = this.leaf;
+      var self = this;
+      var cascader = this.cascader;
+      var checkedValue = cascader.data.checkedValue;
+      var checkedNodePaths = cascader.data.checkedNodePaths;
+      var selfValue = this.value;
+
+      $li.addClass('el-cascader-node is-selectable');
+
+      // 多选框
+      var $checked = $('<label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false" class="el-checkbox__original" value=""></span></label>');
+      this.$checked = $checked;
+      $li.prepend($checked);
+
+      // 渲染
+      var exist = checkedNodePaths.some(function (node) {
+        return node.path.some(function (node) {
+          return node.value === selfValue;
+        })
+      });
+      if (exist) {
         $li.addClass('in-checked-path');
-      }, true);
-      $radio && $radio.find('.el-radio__input').addClass('is-checked');
+        if (checkedValue.indexOf(selfValue) !== -1) {
+          this.$checked.find('.el-checkbox__input').addClass('is-checked');
+        }
+      }
+
+      // 触发下一个节点
+      this._liClick(function (event) {
+        event.stopPropagation();
+        if (!leaf) {
+          $li.siblings().removeClass('in-active-path');
+          $li.addClass('in-active-path');
+        }
+        // 添加下级菜单
+        cascader._appendMenu(childrenNode, level + 1, self);
+      });
+
+      if (this.disabled) {
+        $checked.addClass('is-disabled');
+        $checked.find('.el-checkbox__input').addClass('is-disabled');
+        return;
+      }
+      // 选中事件
+      $checked.click(function (event) {
+        event.preventDefault();
+        self.selectedValue();
+      });
     },
     /**
      * 向上传递
@@ -478,225 +460,50 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 设置级联值
-     * @param value
      */
-    set currentValue(value) {
+    selectedValue: function () {
+      var value = this.value;
       var cascader = this.cascader;
-      if (cascader.data.value !== value) {
-        cascader.data.value = value;
-        cascader.data.activeNode = this;
-        // 填充路径
-        cascader.change(cascader.data.value, cascader.data.activeNode);
-        cascader._setClear();
-      }
-    },
-    /**
-     * 多选&&关联
-     * @private
-     */
-    _renderMultiple: function () {
-      var $li = this.$li;
-      var level = this.level;
-      var childrenNode = this.childrenNode;
+      var multiple = this.props.multiple;
+      var checkStrictly = this.props.checkStrictly;
       var leaf = this.leaf;
-      var self = this;
-      var cascader = this.cascader;
-      var checked = this.checked;
-
-
-      $li.addClass('el-cascader-node');
-
-      // 多选框
-      var $checked = $('<label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false" class="el-checkbox__original" value=""></span></label>');
-      this.$checked = $checked;
-      $li.prepend($checked);
-
-      // 渲染
-      if (checked === 1) {
-        this.$checked.find('.el-checkbox__input').addClass('is-checked');
-      } else if (checked === 2) {
-        this.$checked.find('.el-checkbox__input').addClass('is-indeterminate');
-      }
-
-      if (this.disabled) {
-        $li.addClass('is-disabled');
-        $checked.addClass('is-disabled');
-        $checked.find('.el-checkbox__input').addClass('is-disabled');
-        return;
-      }
-
-      // 触发下一个节点
-      this._liClick(function (event) {
-        event.stopPropagation();
-        if (!leaf) {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
-        }
-        // 添加下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
-      });
-
-      // 选中事件
-      $checked.click(function (event) {
-        event.preventDefault();
-
-        if (leaf) {
-          self.checked = self.checked === 0 ? 1 : 0;
-        } else {
-          self.checked = self.checkedValue(self, self.checked === 0);
-          // 向下传递
-          self.transferChildren(function (node) {
-            if (node.disabled) {
-              return false;
-            }
-            node.checked = self.checkedValue(node, self.checked !== 0);
-          });
-        }
-        // 向上传递
-        self._syncTransferParent();
-      });
-    },
-    /**
-     * 检查子节点，给父节点赋值选中样式
-     * @param node
-     * @param checked
-     * @returns {number|number}
-     */
-    checkedValue: function (node, checked) {
-      if (node.leaf) {
-        return checked ? 1 : 0;
-      } else {
-        var isDisabled = false;
-        var isChecked = checked;
-        // 向下传递
-        node.transferChildren(function (child) {
-          if (child.disabled) {
-            isDisabled = true;
-            return false;
-          }
-          if (child.checked === 0) {
-            isChecked = true;
-          }
-        });
-        if (isDisabled && isChecked) {
-          // 有禁用，有未选->不定
-          return 2;
-        } else if (isChecked) {
-          // 节点不定或者未选中->选中
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-    },
-    /**
-     * 多选&&非关联
-     * @private
-     */
-    _renderMultipleCheckStrictly: function () {
-      var $li = this.$li;
-      var level = this.level;
-      var childrenNode = this.childrenNode;
-      var leaf = this.leaf;
-      var self = this;
-      var cascader = this.cascader;
-      var checked = this.checked;
-      var checkedNodePaths = cascader.data.checkedNodePaths;
-      var selfValue = this.value;
-
-      $li.addClass('el-cascader-node is-selectable');
-
-      // 多选框
-      var $checked = $('<label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false" class="el-checkbox__original" value=""></span></label>');
-      this.$checked = $checked;
-      $li.prepend($checked);
-
-      // 渲染
-      var exist = checkedNodePaths.some(function (node) {
-        return node.path.some(function (node) {
-          return node.value === selfValue;
-        })
-      });
-      if (exist) {
-        $li.addClass('in-checked-path');
-        if (checked === 1) {
-          this.$checked.find('.el-checkbox__input').addClass('is-checked');
-        }
-      }
-
-      // 触发下一个节点
-      this._liClick(function (event) {
-        event.stopPropagation();
-        if (!leaf) {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
-        }
-        // 添加下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
-      });
-
-      if (this.disabled) {
-        $checked.addClass('is-disabled');
-        $checked.find('.el-checkbox__input').addClass('is-disabled');
-        return;
-      }
-      // 选中事件
-      $checked.click(function (event) {
-        event.preventDefault();
-        self.checked = self.checked === 0 ? 1 : 0;
-        self._syncTransferCheckStrictlyParent();
-      });
-    },
-    /**
-     * 关联的复选框父节点同步状态
-     * @private
-     */
-    _syncTransferParent: function () {
-      var self = this;
-      // 向上传递
-      self.transferParent(function (node) {
-        var checked;
-        var map = node.childrenNode.map(function (child) {
-          return child.checked;
-        });
-        if (map.indexOf(2) !== -1 || (map.indexOf(0) !== -1 && map.indexOf(1) !== -1)) {
-          // 有不定就是不定，有选中和未选中也是不定
-          checked = 2;
-        } else if (map.indexOf(1) !== -1) {
-          // 有选中，并且没有了未选中和不定
-          checked = 1;
-        } else {
-          // 只剩下未选中
-          checked = 0;
-        }
-        node.checked = checked;
-      });
-    },
-    /**
-     * 多选无关联同步父级节点样式
-     * @private
-     */
-    _syncTransferCheckStrictlyParent: function () {
-      var self = this;
-      var cascader = this.cascader;
-      var checkedNodePaths = cascader.data.checkedNodePaths;
-      // 向上传递
-      self.transferParent(function (transferNode) {
-        var $li = transferNode.$li;
-        if ($li) {
-          // 渲染
-          var exist = checkedNodePaths.some(function (node) {
-            return node.path.some(function (node) {
-              return node.value === transferNode.value;
-            })
-          });
-          if (exist) {
-            $li.addClass('in-checked-path');
+      if (!multiple && (leaf || checkStrictly)) {
+        cascader._setActiveValue(value, this);
+      } else if (multiple) {
+        var checkedValue = cascader.data.checkedValue;
+        var checkedNodePaths = cascader.data.checkedNodePaths;
+        var checked = this._checked;
+        var paths;
+        if (checkStrictly) {
+          var index = checkedValue.indexOf(value);
+          if (index === -1) {
+            paths = checkedNodePaths.concat([this]);
           } else {
-            $li.removeClass('in-checked-path');
+            paths = checkedNodePaths.concat();
+            paths.splice(index, 1);
+          }
+        } else {
+          var allLeafChildren = this.getAllLeafChildren();
+          if (checked === 1) {
+            // 选中->未选中
+            paths = checkedNodePaths.filter(function (value1) {
+              return !allLeafChildren.some(function (value2) {
+                return value1.value === value2.value;
+              });
+            });
+          } else {
+            // 未选中、部分选中->选中
+            var add = allLeafChildren.filter(function (value1) {
+              return checkedValue.indexOf(value1.value) === -1;
+            });
+            paths = checkedNodePaths.concat(add);
           }
         }
-      }, true);
+        var values = paths.map(function (value1) {
+          return value1.value;
+        });
+        cascader._setCheckedValue(values, paths);
+      }
     },
     /**
      * 点击li事件
@@ -727,16 +534,16 @@ layui.define(["jquery"], function (exports) {
       if (multiple) {
         //多选
         if (checkStrictly) {
-          this._sync.syncMultipleCheckStrictly();
+          this._sync.syncMultipleCheckStrictly(this);
         } else {
-          this._sync.syncMultiple();
+          this._sync.syncMultiple(this);
         }
       } else {
         //单选
         if (checkStrictly) {
-          this._sync.syncRadioCheckStrictly();
+          this._sync.syncRadioCheckStrictly(this);
         } else {
-          this._sync.syncRadio();
+          this._sync.syncRadio(this);
         }
       }
     },
@@ -747,86 +554,103 @@ layui.define(["jquery"], function (exports) {
       /**
        * 同步单选关联样式
        */
-      syncRadio: function () {
-        var $li = this.$li;
-        var fromIcon = this.icons.from;
-        var okIcon = this.icons.ok;
-        var multiple = this.props.multiple;
-        var checkStrictly = this.props.checkStrictly;
+      syncRadio: function (self) {
+        var $li = self.$li;
+        var fromIcon = self.icons.from;
+        var okIcon = self.icons.ok;
+        var multiple = self.props.multiple;
+        var checkStrictly = self.props.checkStrictly;
+        var value = self.value;
         if (!$li || multiple || checkStrictly) {
           return;
         }
-        var activeNode = this.cascader.data.activeNode;
+        var activeNode = self.cascader.data.activeNode;
+        if (self.currentValue === value) {
+          var ok = $li.find('.' + okIcon);
+          if (ok.length === 0) {
+            $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
+          }
+        } else {
+          $li.find('.' + okIcon).remove();
+        }
         if (activeNode && activeNode.path.some(function (node) {
           return node.value === value;
         })) {
-          if (this.currentValue === value) {
-            $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
-          }
           $li.addClass('is-active');
           $li.addClass('in-checked-path');
         } else {
           $li.removeClass('is-active');
           $li.removeClass('in-checked-path');
-          $li.find('.' + okIcon).remove();
         }
       },
       /**
        * 同步单选非关联样式
        */
-      syncRadioCheckStrictly: function () {
-        var $li = this.$li;
-        var checkStrictly = this.props.checkStrictly;
-        var multiple = this.props.multiple;
+      syncRadioCheckStrictly: function (self) {
+        var $li = self.$li;
+        var checkStrictly = self.props.checkStrictly;
+        var multiple = self.props.multiple;
         if (!$li || multiple || !checkStrictly) {
           return;
         }
-        var $radio = this.$radio;
-        var activeNode = this.cascader.data.activeNode;
-        var value = this.value;
+        var $radio = self.$radio;
+        var activeNode = self.cascader.data.activeNode;
+        var value = self.value;
+        if (self.currentValue === value) {
+          $radio.find('.el-radio__input').addClass('is-checked');
+        } else {
+          $radio.find('.el-radio__input').removeClass('is-checked');
+        }
         if (activeNode && activeNode.path.some(function (node) {
           return node.value === value;
         })) {
-          if (this.currentValue === value) {
-            $radio.find('.el-radio__input').addClass('is-checked');
-          }
           $li.addClass('is-active');
           $li.addClass('in-checked-path');
         } else {
           $li.removeClass('is-active');
           $li.removeClass('in-checked-path');
-          $radio.find('.el-radio__input').removeClass('is-checked');
         }
       },
       /**
        * 同步多选关联样式
        */
-      syncMultiple: function () {
-        var $li = this.$li;
-        var checkStrictly = this.props.checkStrictly;
-        var multiple = this.props.multiple;
-        var currentCheckedValue = this.currentCheckedValue;
-        if (!$li || !multiple || checkStrictly) {
+      syncMultiple: function (self) {
+        var $li = self.$li;
+        var checkStrictly = self.props.checkStrictly;
+        var multiple = self.props.multiple;
+        var currentCheckedValue = self.currentCheckedValue;
+        if (!multiple || checkStrictly) {
           return;
         }
-        var allLeafChildren = this.getAllLeafChildren();
+        var allLeafChildren = self.getAllLeafChildren();
+        allLeafChildren = allLeafChildren.map(function (value) {
+          return value.value;
+        });
         // 全部未选中 0
         // 全部选中 1
         // 部分选中 2
         var checked = 0;
-        for (var allLeafChildrenKey in allLeafChildren) {
-          var child = allLeafChildren[allLeafChildrenKey];
+        for (var i = 0; i < allLeafChildren.length; i++) {
+          var child = allLeafChildren[i];
           if (checked === 2) {
             break;
           }
           if (currentCheckedValue.indexOf(child) !== -1) {
-            checked = 1;
+            if (i > 0 && checked !== 1) {
+              checked = 2;
+            } else {
+              checked = 1;
+            }
           } else {
             // 当全部选中时，则改为部分选中，否则全部未选中
             checked = checked === 1 ? 2 : 0;
           }
         }
-        var $checkbox = this.$checked.find('.el-checkbox__input');
+        self._checked = checked;
+        if (!$li) {
+          return;
+        }
+        var $checkbox = self.$checked.find('.el-checkbox__input');
         if (checked === 0) {
           $checkbox.removeClass('is-checked');
           $checkbox.removeClass('is-indeterminate');
@@ -841,22 +665,22 @@ layui.define(["jquery"], function (exports) {
       /**
        * 同步多选非关联样式
        */
-      syncMultipleCheckStrictly: function () {
-        var $li = this.$li;
-        var checkStrictly = this.props.checkStrictly;
-        var multiple = this.props.multiple;
+      syncMultipleCheckStrictly: function (self) {
+        var $li = self.$li;
+        var checkStrictly = self.props.checkStrictly;
+        var multiple = self.props.multiple;
         if (!$li || !multiple || !checkStrictly) {
           return;
         }
-        var checkedNodePaths = this.cascader.data.checkedNodePaths;
-        var currentCheckedValue = this.currentCheckedValue;
-        var value = this.value;
+        var checkedNodePaths = self.cascader.data.checkedNodePaths;
+        var currentCheckedValue = self.currentCheckedValue;
+        var value = self.value;
         var exist = checkedNodePaths.some(function (node) {
           return node.path.some(function (node) {
             return node.value === value;
           });
         });
-        var $checkbox = this.$checked.find('.el-checkbox__input');
+        var $checkbox = self.$checked.find('.el-checkbox__input');
         if (currentCheckedValue.some(function (checkedValue) {
           return checkedValue === value;
         })) {
@@ -875,16 +699,20 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 获取叶子节点value值
+     * @param disabled 是否包含禁用
      * @returns {Node[]|*[]}
      */
-    getAllLeafChildren: function () {
+    getAllLeafChildren: function (disabled) {
       var leaf = this.leaf;
       if (leaf) {
-        return [this.value];
+        return [this];
       } else {
         var leafs = [];
         this.transferChildren(function (node) {
-          node.leaf && leafs.push(node.value);
+          if (node.disabled && !disabled) {
+            return false;
+          }
+          node.leaf && leafs.push(node);
         });
         return leafs;
       }
@@ -1156,7 +984,15 @@ layui.define(["jquery"], function (exports) {
             self.isFiltering = true;
             var nodes = self.getNodes();
             var filterNodes = nodes.filter(function (node) {
-              if (node.leaf || checkStrictly) {
+              var disabled;
+              if (checkStrictly) {
+                disabled = node.disabled;
+              } else {
+                disabled = node.path.some(function (value) {
+                  return value.disabled;
+                });
+              }
+              if ((node.leaf || checkStrictly) && !disabled) {
                 if (typeof filterMethod === 'function' && filterMethod(node, val)) {
                   // 命中
                   return true;
@@ -1314,19 +1150,64 @@ layui.define(["jquery"], function (exports) {
       }
       return nodes;
     },
+    /**
+     * 设置单选值
+     * @param value 值
+     * @param node 节点对象
+     * @private
+     */
     _setActiveValue: function (value, node) {
       if (this.data.value !== value) {
+        var activeNode = this.data.activeNode;
         this.data.value = value;
         this.data.activeNode = node;
-        var topParentNode1 = this.data.value && this.data.value.topParentNode;
-        var topParentNode2 = value && value.topParentNode;
-        topParentNode1 && topParentNode1.transferChildren(function (node) {
+        activeNode && activeNode.transferParent(function (node) {
           node.syncStyle();
-        },true)
-        topParentNode2 && topParentNode2.transferChildren(function (node) {
+        }, true);
+        node && node.transferParent(function (node) {
           node.syncStyle();
-        },true)
+        }, true);
+        // 填充路径
+        this.change(value, node);
+        if (value) {
+          this._setClear();
+        }
       }
+    },
+    /**
+     * 设置多选值
+     * @param values 值数组
+     * @param nodes 节点数组
+     * @private
+     */
+    _setCheckedValue: function (values, nodes) {
+      var checkedNodePaths = this.data.checkedNodePaths;
+      this.data.checkedValue = values || [];
+      this.data.checkedNodePaths = nodes || [];
+      var syncPath = [];
+      var syncValue = [];
+      checkedNodePaths.forEach(function (value) {
+        value.path.forEach(function (node) {
+          if (syncValue.indexOf(node.value) === -1) {
+            syncPath.push(node);
+            syncValue.push(node.value);
+          }
+        });
+      });
+      nodes.forEach(function (value) {
+        value.path.forEach(function (node) {
+          if (syncValue.indexOf(node.value) === -1) {
+            syncPath.push(node);
+            syncValue.push(node.value);
+          }
+        });
+      });
+      syncPath.forEach(function (value) {
+        value.syncStyle();
+      });
+      // 填充路径
+      this.change(values, nodes);
+      this._setClear();
     },
     /**
      * 设置值
@@ -1344,33 +1225,20 @@ layui.define(["jquery"], function (exports) {
       var checkStrictly = this.props.checkStrictly;
       var multiple = this.props.multiple;
       if (multiple) {
-        nodes.forEach(function (node) {
-          var leaf = node.leaf;
-          if (value.indexOf(node.value) !== -1) {
-            if (checkStrictly || leaf) {
-              node.checked = 1;
-              if (!checkStrictly) {
-                node._syncTransferParent();
-              }
-            }
-          }
+        var paths = nodes.filter(function (node) {
+          return (checkStrictly || node.leaf) && value.indexOf(node.value) !== -1;
         });
+        var values = paths.map(function (node) {
+          return node.value;
+        });
+        this._setCheckedValue(values, paths);
       } else {
-        var filter = nodes.filter(function (node) {
-          var leaf = node.leaf;
-          if (checkStrictly || leaf) {
-            if (node.value == value) {
-              return true;
-            }
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          if ((checkStrictly || node.leaf) && node.value === value) {
+            this._setActiveValue(node.value, node);
+            break;
           }
-          return false;
-        });
-        if (filter.length > 0) {
-          var node = filter[0];
-          this.data.value = node.value;
-          this.data.activeNode = node;
-          this.change(this.data.value, this.data.activeNode);
-          this._setClear();
         }
       }
     },
@@ -1693,33 +1561,11 @@ layui.define(["jquery"], function (exports) {
      * 清空选中的节点
      */
     clearCheckedNodes: function () {
-      this.data.value = null;
-      this.data.activeNode = null;
-      this.data.checkedValue = [];
-      this.data.checkedNodePaths = [];
       var multiple = this.props.multiple;
-      var $menus = this.$menus;
-      if ($menus) {
-        var $lis = $($menus[$menus.length - 1]).find('li');
-        if (multiple) {
-          this.change(this.data.checkedValue, []);
-        } else {
-          $lis.find('.' + this.icons.ok).remove();
-          // 移除选中样式
-          $lis.removeClass('is-active');
-          this.change(this.data.value, null);
-        }
-        // 单选样式
-        this.$panel.find('.is-checked').removeClass('is-checked');
-        // 移除所有选中颜色
-        this.$panel.find('.in-checked-path').removeClass('in-checked-path');
-        // 移除最后一级粗体
-        $lis.removeClass('in-active-path');
-        // 移除复选框样式
-        var nodes = this.getNodes();
-        nodes.forEach(function (node) {
-          node.checked = 0;
-        });
+      if (multiple) {
+        this._setCheckedValue([], []);
+      } else {
+        this._setActiveValue(null, null);
       }
     }
   };

@@ -1109,7 +1109,7 @@ layui.use('layCascader', function () {
         </tr>
         <tr>
             <td>change</td>
-            <td>当节点变更时，执行回调<br>多选时，参数是一个数组，且可能会出现多次回调</td>
+            <td>当节点变更时，执行回调<br>多选时，参数是一个数组</td>
             <td>单选：function(value,Node){}<br>多选：function(values,Nodes){}</td>
         </tr>
         <tr>
@@ -1153,6 +1153,7 @@ layui.use('layCascader', function () {
     children: [{
       value: 'shejiyuanze',
       label: '设计原则',
+      disabled: true,
       children: [{
         value: 'yizhi',
         label: '一致'
