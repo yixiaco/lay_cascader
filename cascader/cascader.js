@@ -1434,15 +1434,30 @@ layui.define(["jquery"], function (exports) {
         self.$div.mouseleave(function () {
           out();
         });
-        self.$icon.one('click', function (event) {
-          event.stopPropagation();
-          self.blur(event);
-          self.clearCheckedNodes();
+        self.$icon.off('click');
+        var multiple = this.props.multiple;
+        var clear;
+        if (multiple) {
+          clear = this.data.checkedValue.length > 0;
+        } else {
+          clear = !!this.data.value;
+        }
+        if (clear) {
+          self.$icon.one('click', function (event) {
+            event.stopPropagation();
+            self.blur(event);
+            self.clearCheckedNodes();
+            out();
+            self.$icon.off('mouseenter');
+            self.$div.off('mouseenter');
+            self.$div.off('mouseleave');
+          });
+        } else {
           out();
           self.$icon.off('mouseenter');
           self.$div.off('mouseenter');
           self.$div.off('mouseleave');
-        });
+        }
       }
     },
     // 禁用
