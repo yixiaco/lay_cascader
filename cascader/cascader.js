@@ -867,15 +867,10 @@ layui.define(["jquery"], function (exports) {
       }
       // 初始化输入框
       this._initInput();
-      // 初始化节点
-      this.data.nodes = this.initNodes(this.config.options, 0, null);
-      if (this.config.value) {
-        this.setValue(this.config.value);
-      }
       // 初始化面板
       this._initPanel();
-      // 初始化根目录
-      this._initRoot();
+      // 初始化选项值
+      this.setOptions(this.config.options);
       var self = this;
       // 监听滚动条
       $(window).scroll(function () {
@@ -908,10 +903,11 @@ layui.define(["jquery"], function (exports) {
       var lazy = this.props.lazy;
       var lazyLoad = this.props.lazyLoad;
       var self = this;
-      if (this.data.nodes.length > 0 || !lazy) {
-        this._appendMenu(this.data.nodes, 0);
+      var nodes = this.data.nodes;
+      if (nodes.length > 0 || !lazy) {
+        this._appendMenu(nodes, 0);
       } else if (lazy) {
-        this._appendMenu(this.data.nodes, 0);
+        this._appendMenu(nodes, 0);
         lazyLoad({
           root: true,
           level: 0
@@ -920,6 +916,19 @@ layui.define(["jquery"], function (exports) {
           self._appendMenu(self.data.nodes, 0);
         });
       }
+    },
+    /**
+     * 设置选项值
+     * @param options
+     */
+    setOptions: function (options) {
+      // 初始化节点
+      this.data.nodes = this.initNodes(options, 0, null);
+      if (this.config.value) {
+        this.setValue(this.config.value);
+      }
+      // 初始化根目录
+      this._initRoot();
     },
     // 面板定位
     _resetXY: function () {
@@ -1664,6 +1673,13 @@ layui.define(["jquery"], function (exports) {
   var thisCas = function () {
     var self = this;
     return {
+      /**
+       * 设置选项值
+       * @param options
+       */
+      setOptions: function (options) {
+        self.setOptions(options);
+      },
       /**
        * 覆盖当前值
        * @param value 单选时传对象，多选时传数组
