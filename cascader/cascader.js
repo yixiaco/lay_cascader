@@ -795,7 +795,7 @@ layui.define(["jquery"], function (exports) {
       beforeFilter: function (value) {
         return true;
       },//筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选
-      // popperClass: '',      //	自定义浮层类名	string
+      popperClass: '',      //	自定义浮层类名	string
       extendClass: false,     //继承class样式
       extendStyle: false,     //继承style样式
       props: {
@@ -1117,9 +1117,10 @@ layui.define(["jquery"], function (exports) {
     // 初始化面板(panel(1))
     _initPanel: function () {
       var $panel = this.$panel;
+      var popperClass = this.config.popperClass || '';
       if (!$panel) {
         // z-index：解决和layer.open默认19891014的冲突
-        this.$panel = $('<div class="el-popper el-cascader__dropdown" style="position: absolute; z-index: 19891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
+        this.$panel = $('<div class="el-popper el-cascader__dropdown ' + popperClass + '" style="position: absolute; z-index: 19891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
         $panel = this.$panel;
         $panel.appendTo('body');
         $panel.click(function (event) {
