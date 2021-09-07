@@ -25,6 +25,8 @@ layui.define(["jquery"], function (exports) {
     this.icons = cascader.icons;
     //该节点是否被选中 0:未选中，1：选中，2：不定
     this._checked = 0;
+    // 是否正在加载中
+    this._loading = false;
   }
 
   Node.prototype = {
@@ -35,6 +37,25 @@ layui.define(["jquery"], function (exports) {
     },
     /** 子节点 */
     childrenNode: undefined,
+    get loading() {
+      return this._loading;
+    },
+    set loading(loading) {
+      var $li = this.$li;
+      if ($li) {
+        var rightIcon = this.icons.right;
+        var loadingIcon = this.icons.loading;
+        var $i = $li.find('i');
+        if (loading) {
+          $i.addClass(loadingIcon);
+          $i.removeClass(rightIcon);
+        } else {
+          $i.addClass(rightIcon);
+          $i.removeClass(loadingIcon);
+        }
+      }
+      return this._loading = loading;
+    },
     /** 当前节点的显示文本 */
     get label() {
       return this.data[this.props.label];
@@ -50,6 +71,9 @@ layui.define(["jquery"], function (exports) {
     /** 子节点数据 */
     get children() {
       return this.data[this.props.children];
+    },
+    set children(children) {
+      this.data[this.props.children] = children;
     },
     /** 叶子节点 */
     get leaf() {
@@ -217,7 +241,6 @@ layui.define(["jquery"], function (exports) {
       var fromIcon = this.icons.from;
       var okIcon = this.icons.ok;
       var level = this.level;
-      var childrenNode = this.childrenNode;
       var leaf = this.leaf;
       var self = this;
       var cascader = this.cascader;
@@ -234,6 +257,7 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
+        var childrenNode = self.childrenNode;
         if (leaf) {
           self.selectedValue();
           // 关闭面板
@@ -264,7 +288,6 @@ layui.define(["jquery"], function (exports) {
       var $li = this.$li;
       var value = this.value;
       var level = this.level;
-      var childrenNode = this.childrenNode;
       var leaf = this.leaf;
       var self = this;
       var cascader = this.cascader;
@@ -279,6 +302,7 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
+        var childrenNode = self.childrenNode;
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
@@ -295,6 +319,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $radio.click(function (event) {
         event.preventDefault();
+        var childrenNode = self.childrenNode;
         self.selectedValue();
         // 重新加载一下下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -316,7 +341,6 @@ layui.define(["jquery"], function (exports) {
     _renderMultiple: function () {
       var $li = this.$li;
       var level = this.level;
-      var childrenNode = this.childrenNode;
       var leaf = this.leaf;
       var self = this;
       var cascader = this.cascader;
@@ -346,6 +370,7 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
+        var childrenNode = self.childrenNode;
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
@@ -367,7 +392,6 @@ layui.define(["jquery"], function (exports) {
     _renderMultipleCheckStrictly: function () {
       var $li = this.$li;
       var level = this.level;
-      var childrenNode = this.childrenNode;
       var leaf = this.leaf;
       var self = this;
       var cascader = this.cascader;
@@ -398,6 +422,7 @@ layui.define(["jquery"], function (exports) {
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
+        var childrenNode = self.childrenNode;
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
@@ -505,18 +530,46 @@ layui.define(["jquery"], function (exports) {
         cascader._setCheckedValue(values, paths);
       }
     },
+    _liLoad: function (event, callback) {
+      var leaf = this.leaf;
+      var lazy = this.props.lazy;
+      var lazyLoad = this.props.lazyLoad;
+      var children = this.children;
+      var self = this;
+      var cascader = this.cascader;
+      var level = this.level;
+      if (!leaf && (!children || children.length === 0) && lazy) {
+        if (!self.loading) {
+          self.loading = true;
+          lazyLoad(self, function (nodes) {
+            self.loading = false;
+            self.setChildren(cascader.initNodes(nodes, level + 1, self));
+            self.children = nodes;
+            callback && callback(event);
+          });
+        }
+      } else {
+        callback && callback(event);
+      }
+    },
     /**
      * 点击li事件
-     * @param fun
+     * @param callback
      * @private
      */
-    _liClick: function (fun) {
+    _liClick: function (callback) {
       var leaf = this.leaf;
       var $li = this.$li;
+      var self = this;
+
+      function load(event) {
+        self._liLoad(event, callback);
+      }
+
       if (this.props.expandTrigger === "click" || leaf) {
-        $li.click(fun);
+        $li.click(load);
       } else if (this.props.expandTrigger === "hover") {
-        $li.mouseenter(fun);
+        $li.mouseenter(load);
       }
     },
     setChildren: function (children) {
@@ -749,9 +802,9 @@ layui.define(["jquery"], function (exports) {
         expandTrigger: 'click', //次级菜单的展开方式	string	click / hover	'click'
         multiple: false,	      //是否多选	boolean	-	false
         checkStrictly: false, 	//是否严格的遵守父子节点不互相关联	boolean	-	false
-        // lazy: false,	        //是否动态加载子节点，需与 lazyLoad 方法结合使用	boolean	-	false
-        // lazyLoad: function (node, resolve) {
-        // },	//加载动态数据的方法，仅在 lazy 为 true 时有效	function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用)
+        lazy: false,	        //是否动态加载子节点，需与 lazyLoad 方法结合使用	boolean	-	false
+        lazyLoad: function (node, resolve) {
+        },	//加载动态数据的方法，仅在 lazy 为 true 时有效	function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用)
         value: 'value',	        //指定选项的值为选项对象的某个属性值	string	—	'value'
         label: 'label',	        //指定选项标签为选项对象的某个属性值	string	—	'label'
         children: 'children',	  //指定选项的子选项为选项对象的某个属性值	string	—	'children'
@@ -804,7 +857,8 @@ layui.define(["jquery"], function (exports) {
       down: 'layui-icon-down',
       close: 'layui-icon-close',
       right: 'layui-icon-right',
-      ok: 'layui-icon-ok'
+      ok: 'layui-icon-ok',
+      loading: 'layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop'
     },
     // 初始化
     _init: function () {
@@ -820,6 +874,8 @@ layui.define(["jquery"], function (exports) {
       }
       // 初始化面板
       this._initPanel();
+      // 初始化根目录
+      this._initRoot();
       var self = this;
       // 监听滚动条
       $(window).scroll(function () {
@@ -843,6 +899,27 @@ layui.define(["jquery"], function (exports) {
           self.blur(event);
         }
       });
+    },
+    /**
+     * 初始化根目录
+     * @private
+     */
+    _initRoot: function () {
+      var lazy = this.props.lazy;
+      var lazyLoad = this.props.lazyLoad;
+      var self = this;
+      if (this.data.nodes.length > 0 || !lazy) {
+        this._appendMenu(this.data.nodes, 0);
+      } else if (lazy) {
+        this._appendMenu(this.data.nodes, 0);
+        lazyLoad({
+          root: true,
+          level: 0
+        }, function (nodes) {
+          self.data.nodes = self.initNodes(nodes, 0, null);
+          self._appendMenu(self.data.nodes, 0);
+        });
+      }
     },
     // 面板定位
     _resetXY: function () {
@@ -1036,7 +1113,6 @@ layui.define(["jquery"], function (exports) {
         this.$panel = $('<div class="el-popper el-cascader__dropdown" style="position: absolute; z-index: 19891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
         $panel = this.$panel;
         $panel.appendTo('body');
-        this._appendMenu(this.data.nodes, 0);
         $panel.click(function (event) {
           // 阻止事件冒泡
           event.stopPropagation();
@@ -1145,7 +1221,7 @@ layui.define(["jquery"], function (exports) {
         var node = new Node(datum, this, level, parentNode);
         nodes.push(node);
         if (node.children && node.children.length > 0) {
-          node.setChildren(this.initNodes(node.children, level + 1, node))
+          node.setChildren(this.initNodes(node.children, level + 1, node));
         }
       }
       return nodes;

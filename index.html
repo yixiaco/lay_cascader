@@ -610,7 +610,9 @@ layui.use('layCascader', function () {
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
     <legend>可搜索</legend>
 </fieldset>
-<blockquote class="layui-elem-quote">将filterable赋值为true即可打开搜索功能，默认会匹配节点的label或所有父节点的label(由showAllLevels决定)中包含输入值的选项。你也可以用filterMethod自定义搜索逻辑，接受一个函数，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中。</blockquote>
+<blockquote class="layui-elem-quote">
+    将filterable赋值为true即可打开搜索功能，默认会匹配节点的label或所有父节点的label(由showAllLevels决定)中包含输入值的选项。你也可以用filterMethod自定义搜索逻辑，接受一个函数，第一个参数是节点node，第二个参数是搜索关键词keyword，通过返回布尔值表示是否命中。
+</blockquote>
 
 <div class="layui-bg-gray" style="padding: 30px;">
     <div class="layui-row layui-col-space15">
@@ -878,6 +880,61 @@ layui.use('layCascader', function () {
         </div>
     </div>
 </div>
+<!--动态加载-->
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>动态加载</legend>
+</fieldset>
+<blockquote class="layui-elem-quote">
+    通过lazy开启动态加载，并通过lazyload来设置加载数据源的方法。lazyload方法有两个参数，第一个参数node为当前点击的节点，第二个resolve为数据加载完成的回调(必须调用)。为了更准确的显示节点的状态，还可以对节点数据添加是否为叶子节点的标志位
+    (默认字段为leaf，可通过props.leaf修改)，否则会简单的以有无子节点来判断是否为叶子节点。
+</blockquote>
+
+<div class="layui-bg-gray" style="padding: 30px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-panel">
+            <div class="layui-card">
+                <div style="margin: 10px 20px;"><input id="demo14"/></div>
+                <div class="layui-card-body">
+                    <div class="layui-collapse">
+                        <div class="layui-colla-item">
+                            <h2 class="layui-colla-title">代码</h2>
+                            <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="demo14"/&gt;
+layui.use('layCascader', function () {
+    var id = 0;
+    // 动态加载
+    layCascader({
+      elem: '#demo14',
+      props: {
+        lazy: true,
+        lazyLoad: function(node, resolve) {
+          var level = node.level;
+          setTimeout(function () {
+            var nodes = Array.from({length: level + 2})
+              .map(function (item) {
+                return {
+                  value: ++id,
+                  label: '选项' + id,
+                  leaf: level >= 1
+                };
+              });
+            // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+            resolve(nodes);
+          }, 1000);
+        }
+      }
+    });
+});
+                             </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
     <legend>Attributes</legend>
 </fieldset>
@@ -1050,6 +1107,20 @@ layui.use('layCascader', function () {
             <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
+        </tr>
+        <tr>
+            <td>lazy</td>
+            <td>是否动态加载子节点，需与 lazyLoad 方法结合使用</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>lazyLoad</td>
+            <td>加载动态数据的方法，仅在 lazy 为 true 时有效</td>
+            <td>Function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用)</td>
+            <td>-</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>value</td>
@@ -1711,6 +1782,29 @@ layui.use('layCascader', function () {
       elem: '#duoXuanHuiXian2',
       value: ['shejiyuanze', 'layout'],
       options: options
+    });
+    var id = 0;
+    // 动态加载
+    layCascader({
+      elem: '#demo14',
+      props: {
+        lazy: true,
+        lazyLoad: function(node, resolve) {
+          var level = node.level;
+          setTimeout(function () {
+            var nodes = Array.from({length: level + 2})
+              .map(function (item) {
+                return {
+                  value: ++id,
+                  label: '选项' + id,
+                  leaf: level >= 1
+                };
+              });
+            // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+            resolve(nodes);
+          }, 1000);
+        }
+      }
     });
   });
 </script>
