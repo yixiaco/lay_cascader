@@ -27,26 +27,30 @@ layui cascader 仿element-ui级联选择器
 
 ## Props
 
-| 参数          | 说明                                             | 类型    | 可选值        | 默认值     |
-| :------------ | :----------------------------------------------- | :------ | :------------ | :--------- |
-| expandTrigger | 次级菜单的展开方式                               | String  | click / hover | 'click'    |
-| multiple      | 是否多选                                         | Boolean | true / false  | false      |
-| checkStrictly | 是否严格的遵守父子节点不互相关联                 | Boolean | true / false  | false      |
-| value         | 指定选项的值为选项对象的某个属性值               | String  | -             | 'value'    |
-| label         | 指定选项标签为选项对象的某个属性值               | String  | -             | 'label'    |
-| children      | 指定选项的子选项为选项对象的某个属性值           | String  | -             | 'children' |
-| disabled      | 指定选项的禁用为选项对象的某个属性值             | String  | -             | 'disabled' |
-| leaf          | 指定选项的叶子节点的标志位为选项对象的某个属性值 | String  | -             | 'leaf'     |
+| 参数          | 说明                                             | 类型                                                         | 可选值        | 默认值     |
+| :------------ | :----------------------------------------------- | :----------------------------------------------------------- | :------------ | :--------- |
+| expandTrigger | 次级菜单的展开方式                               | String                                                       | click / hover | 'click'    |
+| multiple      | 是否多选                                         | Boolean                                                      | true / false  | false      |
+| checkStrictly | 是否严格的遵守父子节点不互相关联                 | Boolean                                                      | true / false  | false      |
+| lazy          | 是否动态加载子节点，需与 lazyLoad 方法结合使用   | Boolean                                                      | true / false  | false      |
+| lazyLoad      | 加载动态数据的方法，仅在 lazy 为 true 时有效     | Function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用) | -             | -          |
+| value         | 指定选项的值为选项对象的某个属性值               | String                                                       | -             | 'value'    |
+| label         | 指定选项标签为选项对象的某个属性值               | String                                                       | -             | 'label'    |
+| children      | 指定选项的子选项为选项对象的某个属性值           | String                                                       | -             | 'children' |
+| disabled      | 指定选项的禁用为选项对象的某个属性值             | String                                                       | -             | 'disabled' |
+| leaf          | 指定选项的叶子节点的标志位为选项对象的某个属性值 | String                                                       | -             | 'leaf'     |
 
 ## Event
 
-| 方法名            | 说明                                                         | 参数                                                         |
-| :---------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
-| setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 单选：Object/String/Number<br>多选：Array                    |
-| change            | 当节点变更时，执行回调 <br>多选时，参数是一个数组，且可能会出现多次回调 | 单选：function(value,Node){} <br>多选：function(values,Nodes){} |
-| disabled          | 禁用组件                                                     | boolean                                                      |
-| blur              | 收起面板                                                     | -                                                            |
-| focus             | 展开面板                                                     | -                                                            |
-| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                            |
-| getCheckedValues  | 获取选中的值                                                 | -                                                            |
-| clearCheckedNodes | 清空选中的节点                                               | -                                                            |
+| 方法名            | 说明                                                         | 参数                                                        |
+| :---------------- | :----------------------------------------------------------- | :---------------------------------------------------------- |
+| setOptions        | 设置当前选项                                                 | Array                                                       |
+| setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 单选：Object/String/Number 多选：Array                      |
+| change            | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){} |
+| disabled          | 禁用组件                                                     | Boolean                                                     |
+| blur              | 收起面板                                                     | -                                                           |
+| focus             | 展开面板                                                     | -                                                           |
+| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                           |
+| getCheckedValues  | 获取选中的值                                                 | -                                                           |
+| clearCheckedNodes | 清空选中的节点                                               | -                                                           |
+
