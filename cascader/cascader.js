@@ -934,9 +934,8 @@ layui.define(["jquery"], function (exports) {
     setOptions: function (options) {
       // 初始化节点
       this.data.nodes = this.initNodes(options, 0, null);
-      if (this.config.value) {
-        this.setValue(this.config.value);
-      }
+      // 清空选中的节点
+      this.clearCheckedNodes();
       // 初始化根目录
       this._initRoot();
     },
