@@ -934,8 +934,8 @@ layui.define(["jquery"], function (exports) {
     setOptions: function (options) {
       // 初始化节点
       this.data.nodes = this.initNodes(options, 0, null);
-      // 清空选中的节点
-      this.clearCheckedNodes();
+      // 初始化值
+      this.setValue(this.config.value);
       // 初始化根目录
       this._initRoot();
     },
@@ -1311,12 +1311,12 @@ layui.define(["jquery"], function (exports) {
      * @param value
      */
     setValue: function (value) {
-      if (!value) {
-        return;
-      }
       if (this.data.activeNodeId || this.data.checkedNodeIds.length > 0) {
         // 清空值
         this.clearCheckedNodes();
+      }
+      if (!value) {
+        return;
       }
       var nodes = this.getNodes(this.data.nodes);
       var checkStrictly = this.props.checkStrictly;
