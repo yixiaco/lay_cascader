@@ -1661,7 +1661,7 @@ layui.define(["jquery"], function (exports) {
      */
     getCheckedValues: function () {
       if (this.props.multiple) {
-        return this.checkedNodePaths.map(function (node) {
+        return this.data.checkedNodePaths.map(function (node) {
           return node.value;
         });
       } else {
