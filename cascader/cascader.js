@@ -223,7 +223,7 @@ layui.define(["jquery"], function (exports) {
           }
         } else {
           // 关闭面板
-          cascader.blur(event);
+          cascader.blur();
         }
       });
 
@@ -263,7 +263,7 @@ layui.define(["jquery"], function (exports) {
         if (leaf) {
           self.selectedValue();
           // 关闭面板
-          cascader.blur(event);
+          cascader.blur();
         } else {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
@@ -837,6 +837,8 @@ layui.define(["jquery"], function (exports) {
     this.filtering = false;
     // 初始化
     this._init();
+    // 面板关闭事件id
+    this.blurEventId = 0;
   }
 
   Cascader.prototype = {
@@ -895,13 +897,11 @@ layui.define(["jquery"], function (exports) {
         if (self.config.disabled) {
           return;
         }
-        // 阻止事件冒泡
-        event.stopPropagation();
         var show = self.showPanel;
         if (!show) {
-          self.focus(event);
+          self.focus();
         } else {
-          self.blur(event);
+          self.blur();
         }
       });
     },
@@ -1074,7 +1074,7 @@ layui.define(["jquery"], function (exports) {
             self.isFiltering = false;
             return;
           }
-          self.focus(event);
+          self.focus();
           if (typeof beforeFilter === 'function' && beforeFilter(val)) {
             self.isFiltering = true;
             var nodes = self.getNodes();
@@ -1546,7 +1546,7 @@ layui.define(["jquery"], function (exports) {
         if (clear) {
           self.$icon.one('click', function (event) {
             event.stopPropagation();
-            self.blur(event);
+            self.blur();
             self.clearCheckedNodes();
             out();
             self.$icon.off('mouseenter');
@@ -1602,41 +1602,45 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 当失去焦点时触发  (event: Event)
-     * @param event
+     * @param eventId 不为空时，必须与blurEventId值相等，防止旧事件触发
      */
-    blur: function (event) {
-      this.showPanel = false;
-      this.$div.find('.layui-icon-down').removeClass('is-reverse');
-      this.$panel.slideUp(100);
-      this.visibleChange(false);
-      // 聚焦颜色
-      this.$input.removeClass('is-focus');
-      // 可搜索
-      var filterable = this.config.filterable;
-      if (filterable) {
-        this.isFiltering = false;
-        this._fillingPath();
+    blur: function (eventId) {
+      if (this.showPanel && (!eventId || this.blurEventId === eventId)) {
+        this.showPanel = false;
+        this.$div.find('.layui-icon-down').removeClass('is-reverse');
+        this.$panel.slideUp(100);
+        this.visibleChange(false);
+        // 聚焦颜色
+        this.$input.removeClass('is-focus');
+        // 可搜索
+        var filterable = this.config.filterable;
+        if (filterable) {
+          this.isFiltering = false;
+          this._fillingPath();
+        }
       }
     },
     /**
      * 当获得焦点时触发  (event: Event)
-     * @param event
      */
-    focus: function (event) {
-      this.showPanel = true;
-      var self = this;
-      // 点击背景关闭面板
-      $(document).one('click', function () {
-        self.blur(event);
-      });
-      // 重新定位面板
-      this._resetXY();
-      // 箭头icon翻转
-      this.$div.find('.layui-icon-down').addClass('is-reverse');
-      this.$panel.slideDown(200);
-      this.visibleChange(true);
-      // 聚焦颜色
-      this.$input.addClass('is-focus');
+    focus: function () {
+      if (!this.showPanel) {
+        this.showPanel = true;
+        this.blurEventId++;
+        var self = this;
+        // 当前传播事件结束后，添加点击背景关闭面板事件
+        setTimeout(function () {
+          $(document).one('click', self.blur.bind(self, self.blurEventId));
+        });
+        // 重新定位面板
+        this._resetXY();
+        // 箭头icon翻转
+        this.$div.find('.layui-icon-down').addClass('is-reverse');
+        this.$panel.slideDown(200);
+        this.visibleChange(true);
+        // 聚焦颜色
+        this.$input.addClass('is-focus');
+      }
     },
     /**
      * 下拉框出现/隐藏时触发
@@ -1723,13 +1727,13 @@ layui.define(["jquery"], function (exports) {
        * 收起面板
        */
       blur: function () {
-        self.blur.call(self);
+        self.blur();
       },
       /**
        * 展开面板
        */
       focus: function () {
-        self.focus.call(self);
+        self.focus();
       },
       /**
        * 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象
