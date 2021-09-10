@@ -1039,7 +1039,7 @@ layui.define(["jquery"], function (exports) {
     _initHideElement: function ($e) {
       // 保存原始元素
       var attributes = $e[0].attributes;
-      var $input = $('<input type="hidden"/>');
+      var $input = $('<input type="hidden" style="display: none;"/>');
       var keys = Object.keys(attributes);
       for (var key in keys) {
         var attribute = attributes[key];
