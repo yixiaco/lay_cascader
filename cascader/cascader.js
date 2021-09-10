@@ -131,7 +131,6 @@ layui.define(["jquery"], function (exports) {
      * @returns {string}
      */
     getPathLabel: function (showAllLevels) {
-      showAllLevels = showAllLevels || true;
       var path = this.path;
       var separator = this.config.separator;
 
@@ -175,7 +174,7 @@ layui.define(["jquery"], function (exports) {
      * 初始化可搜索li
      */
     initSuggestionLi: function () {
-      var label = this.getPathLabel();
+      var label = this.getPathLabel(true);
       this.$suggestionLi = $('<li tabindex="-1" class="el-cascader__suggestion-item"><span>' + label + '</span></li>');
       // 节点渲染
       this._renderFiltering();
@@ -1039,10 +1038,15 @@ layui.define(["jquery"], function (exports) {
      */
     _initHideElement: function ($e) {
       // 保存原始元素
-      var $ec = $e.clone();
-      this.$ec = $ec;
-      $ec.hide();
-      $e.before($ec);
+      var attributes = $e[0].attributes;
+      var $input = $('<input type="hidden"/>');
+      var keys = Object.keys(attributes);
+      for (var key in keys) {
+        var attribute = attributes[key];
+        $input.attr(attribute.name, attribute.value);
+      }
+      this.$ec = $input;
+      $e.before($input);
     },
     /**
      * 初始化可搜索监听事件
