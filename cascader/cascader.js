@@ -309,9 +309,11 @@ layui.define(["jquery"], function (exports) {
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
+        } else if (!self.disabled) {
+          self.selectedValue();
         }
-        // 添加下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       if (self.activeNodeId && activeNode.path.some(function (node) {
@@ -332,10 +334,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $radio.click(function (event) {
         event.preventDefault();
-        var childrenNode = self.childrenNode;
-        self.selectedValue();
-        // 重新加载一下下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
+        !leaf && self.selectedValue();
       });
     },
     /**
@@ -378,15 +377,18 @@ layui.define(["jquery"], function (exports) {
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
+        } else {
+          // 最后一级就默认选择
+          self.selectedValue();
         }
-        // 添加下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       // 选中事件
       $checked.click(function (event) {
         event.preventDefault();
-        self.selectedValue();
+        !leaf && self.selectedValue();
       });
     },
     /**
@@ -430,9 +432,12 @@ layui.define(["jquery"], function (exports) {
         if (!leaf) {
           $li.siblings().removeClass('in-active-path');
           $li.addClass('in-active-path');
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
+        } else if (!self.disabled) {
+          // 最后一级就默认选择
+          self.selectedValue();
         }
-        // 添加下级菜单
-        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       if (this.disabled) {
@@ -443,7 +448,7 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $checked.click(function (event) {
         event.preventDefault();
-        self.selectedValue();
+        !leaf && self.selectedValue();
       });
     },
     /**
