@@ -3,6 +3,10 @@ layui cascader 仿element-ui级联选择器
 
 **演示页面**：https://yixiaco.github.io/lay_cascader/
 
+**gitee**：https://gitee.com/yixiacoco/lay_cascader
+
+**github**： https://github.com/yixiaco/lay_cascader
+
 ## Attributes
 
 | 参数                  | 说明                                                         | 类型                    | 可选值       | 默认值     |
@@ -54,4 +58,5 @@ layui cascader 仿element-ui级联选择器
 | getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                           |
 | getCheckedValues  | 获取选中的值                                                 | -                                                           |
 | clearCheckedNodes | 清空选中的节点                                               | -                                                           |
+| expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                   |
 

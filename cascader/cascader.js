@@ -1,8 +1,10 @@
 /**
  * 仿element-ui，级联选择器
  * 已实现单选，多选，无关联选择
- * 其他功能：组件禁用、节点禁用、自定义属性、自定义空面板，自定义无选择时的提示、多选标签折叠、回显等操作。
+ * 其他功能：组件禁用、节点禁用、自定义属性、自定义空面板，自定义无选择时的提示、多选标签折叠、回显、搜索、动态加载等操作。
  * author: yixiaco
+ * gitee: https://gitee.com/yixiacoco/lay_cascader
+ * github: https://github.com/yixiaco/lay_cascader
  */
 layui.define(["jquery"], function (exports) {
   var $ = layui.jquery;
@@ -777,6 +779,19 @@ layui.define(["jquery"], function (exports) {
         });
         return leafs;
       }
+    },
+    /**
+     * 展开当前节点
+     */
+    expandPanel: function () {
+      var path = this.path;
+      var cascader = this.cascader;
+      path.forEach(function (node, index, array) {
+        if (index !== array.length - 1) {
+          var childrenNode = node.childrenNode;
+          cascader._appendMenu(childrenNode, node.level + 1, node.parentNode);
+        }
+      });
     }
   };
 
@@ -933,10 +948,10 @@ layui.define(["jquery"], function (exports) {
     setOptions: function (options) {
       // 初始化节点
       this.data.nodes = this.initNodes(options, 0, null);
-      // 初始化值
-      this.setValue(this.config.value);
       // 初始化根目录
       this._initRoot();
+      // 初始化值
+      this.setValue(this.config.value);
     },
     // 面板定位
     _resetXY: function () {
@@ -1333,11 +1348,18 @@ layui.define(["jquery"], function (exports) {
           return node.nodeId;
         });
         this._setCheckedValue(nodeIds, paths);
+        // 展开第一个节点
+        if (paths.length > 0) {
+          var first = paths[0];
+          first.expandPanel();
+        }
       } else {
         for (var i = 0; i < nodes.length; i++) {
           var node = nodes[i];
           if ((checkStrictly || node.leaf) && node.value === value) {
             this._setActiveValue(node.nodeId, node);
+            // 展开节点
+            node.expandPanel();
             break;
           }
         }
@@ -1758,6 +1780,20 @@ layui.define(["jquery"], function (exports) {
        */
       clearCheckedNodes: function () {
         self.clearCheckedNodes.call(self);
+      },
+      /**
+       * 展开面板到节点所在的层级
+       * @param value 节点值，只能传单个值，不允许传数组
+       */
+      expandNode: function (value) {
+        var nodes = self.getNodes(self.data.nodes);
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          if (node.value === value) {
+            node.expandPanel();
+            break;
+          }
+        }
       }
     };
   };
