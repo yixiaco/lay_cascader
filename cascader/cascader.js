@@ -116,9 +116,10 @@ layui.define(["jquery"], function (exports) {
     get $tag() {
       var cascader = this.cascader;
       var showAllLevels = this.config.showAllLevels;
+      var disabled = this.config.disabled;
 
       var label = this.getPathLabel(showAllLevels);
-      var $tag = cascader.get$tag(label, true);
+      var $tag = cascader.get$tag(label, !disabled);
       var self = this;
       $tag.find('i').click(function (event) {
         event.stopPropagation();
@@ -1547,49 +1548,47 @@ layui.define(["jquery"], function (exports) {
     },
     // 设置可清理
     _setClear: function () {
-      if (this.config.clearable) {
-        var self = this;
+      var self = this;
 
-        function enter() {
-          self.$icon.removeClass(self.icons.down);
-          self.$icon.addClass(self.icons.close);
-        }
+      function enter() {
+        self.$icon.removeClass(self.icons.down);
+        self.$icon.addClass(self.icons.close);
+      }
 
-        function out() {
-          self.$icon.removeClass(self.icons.close);
-          self.$icon.addClass(self.icons.down);
-        }
+      function out() {
+        self.$icon.removeClass(self.icons.close);
+        self.$icon.addClass(self.icons.down);
+      }
 
-        self.$div.mouseenter(function () {
-          enter();
-        });
-        self.$div.mouseleave(function () {
-          out();
-        });
-        self.$icon.off('click');
-        var multiple = this.props.multiple;
-        var clear;
-        if (multiple) {
-          clear = this.data.checkedNodeIds.length > 0;
-        } else {
-          clear = !!this.data.activeNodeId;
-        }
-        if (clear) {
-          self.$icon.one('click', function (event) {
-            event.stopPropagation();
-            self.blur();
-            self.clearCheckedNodes();
-            out();
-            self.$icon.off('mouseenter');
-            self.$div.off('mouseenter');
-            self.$div.off('mouseleave');
-          });
-        } else {
+      self.$div.mouseenter(function () {
+        enter();
+      });
+      self.$div.mouseleave(function () {
+        out();
+      });
+      self.$icon.off('click');
+      var multiple = this.props.multiple;
+      var clear;
+      if (multiple) {
+        clear = this.data.checkedNodeIds.length > 0;
+      } else {
+        clear = !!this.data.activeNodeId;
+      }
+      if (clear && !this.config.disabled && this.config.clearable) {
+        self.$icon.one('click', function (event) {
+          event.stopPropagation();
+          self.blur();
+          self.clearCheckedNodes();
           out();
           self.$icon.off('mouseenter');
           self.$div.off('mouseenter');
           self.$div.off('mouseleave');
-        }
+        });
+      } else {
+        out();
+        self.$icon.off('mouseenter');
+        self.$div.off('mouseenter');
+        self.$div.off('mouseleave');
       }
     },
     // 禁用
@@ -1603,6 +1602,10 @@ layui.define(["jquery"], function (exports) {
         this.$div.removeClass('is-disabled');
         this.$div.find('.el-input--suffix').removeClass('is-disabled');
       }
+      // 重新设置是否可被清理
+      this._setClear();
+      // 重新填充路径
+      this._fillingPath();
     },
     /**
      * 当选中节点变化时触发  选中节点的值

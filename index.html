@@ -1769,12 +1769,16 @@ layui.use('layCascader', function () {
     });
     // 单选回显
     layCascader({
+      disabled: true,
+      clearable: true,
       elem: '#danXuanHuiXian',
       value: 'dingbudaohang',
       options: options
     });
     // 多选回显
     layCascader({
+      disabled: true,
+      clearable: true,
       props: {
         multiple: true
       },
@@ -1787,6 +1791,7 @@ layui.use('layCascader', function () {
       props: {
         checkStrictly: true
       },
+      clearable: true,
       elem: '#danXuanHuiXian2',
       value: 'shejiyuanze',
       options: options
@@ -1797,6 +1802,7 @@ layui.use('layCascader', function () {
         multiple: true,
         checkStrictly: true
       },
+      clearable: true,
       elem: '#duoXuanHuiXian2',
       value: ['shejiyuanze', 'layout'],
       options: options
