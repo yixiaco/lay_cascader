@@ -70,7 +70,16 @@ layui.define(["jquery"], function (exports) {
     },
     /** 是否禁用 */
     get disabled() {
-      return this.data[this.props.disabled];
+      var disabledName = this.props.disabled;
+      var checkStrictly = this.props.checkStrictly;
+      if (!checkStrictly) {
+        var path = this.path;
+        return path.some(function (node) {
+          return node.data[disabledName];
+        });
+      } else {
+        return this.data[disabledName];
+      }
     },
     /** 子节点数据 */
     get children() {
@@ -103,7 +112,7 @@ layui.define(["jquery"], function (exports) {
     get path() {
       var parentNode = this.parentNode;
       if (parentNode) {
-        return [].concat(parentNode.path, [this]);
+        return parentNode.path.concat([this]);
       } else {
         return [this];
       }
