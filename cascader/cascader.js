@@ -259,6 +259,16 @@ layui.define(["jquery"], function (exports) {
       var cascader = this.cascader;
       var activeNode = this.cascader.data.activeNode;
 
+      if (self.activeNodeId && activeNode.path.some(function (node) {
+        return node.nodeId === nodeId;
+      })) {
+        if (self.activeNodeId === nodeId) {
+          $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
+        }
+        $li.addClass('is-active');
+        $li.addClass('in-checked-path');
+      }
+
       // 是否禁用
       if (this.disabled) {
         $li.addClass('is-disabled');
@@ -282,16 +292,6 @@ layui.define(["jquery"], function (exports) {
         // 添加下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
       });
-
-      if (self.activeNodeId && activeNode.path.some(function (node) {
-        return node.nodeId === nodeId;
-      })) {
-        if (self.activeNodeId === nodeId) {
-          $li.prepend('<i class="' + fromIcon + ' ' + okIcon + ' el-cascader-node__prefix"></i>');
-        }
-        $li.addClass('is-active');
-        $li.addClass('in-checked-path');
-      }
     },
     /**
      * 单选&&非关联
