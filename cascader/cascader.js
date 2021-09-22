@@ -1563,7 +1563,7 @@ layui.define(["jquery"], function (exports) {
     _$inputRowSetValue: function (label) {
       label = label || "";
       var $inputRow = this.$inputRow;
-      $inputRow.attr('label', label); //防止被重置
+      $inputRow.attr('value', label); //防止被重置
       $inputRow.val(label);
     },
     /**
@@ -1747,6 +1747,7 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 清空选中的节点
+     * @param force 强制清理禁用固定节点
      */
     clearCheckedNodes: function (force) {
       var multiple = this.props.multiple;
@@ -1800,7 +1801,7 @@ layui.define(["jquery"], function (exports) {
        * @param disabled true/false
        */
       disabled: function (disabled) {
-        self.disabled.call(self, disabled);
+        self.disabled(disabled);
       },
       /**
        * 收起面板
@@ -1819,20 +1820,21 @@ layui.define(["jquery"], function (exports) {
        * @returns {[]|*}
        */
       getCheckedNodes: function () {
-        return self.getCheckedNodes.call(self);
+        return self.getCheckedNodes();
       },
       /**
        * 获取选中的值
        * @returns {[]|*}
        */
       getCheckedValues: function () {
-        return self.getCheckedValues.call(self);
+        return self.getCheckedValues();
       },
       /**
        * 清空选中的节点
+       * @param force 强制清理禁用固定节点
        */
-      clearCheckedNodes: function () {
-        self.clearCheckedNodes.call(self);
+      clearCheckedNodes: function (force) {
+        self.clearCheckedNodes(force);
       },
       /**
        * 展开面板到节点所在的层级
