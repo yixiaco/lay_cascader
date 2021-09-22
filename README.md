@@ -29,6 +29,7 @@ layui cascader 仿element-ui级联选择器
 | popperClass           | 自定义浮层类名                                               | String                  | -            | ''         |
 | extendClass           | 继承class样式                                                | Boolean                 | true / false | false      |
 | extendStyle           | 继承style样式                                                | Boolean                 | true / false | false      |
+| disabledFixed         | 固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加 | Boolean                 | true / false | false      |
 
 ## Props
 
@@ -55,7 +56,7 @@ layui cascader 仿element-ui级联选择器
 | disabled          | 禁用组件                                                     | Boolean                                                     |
 | blur              | 收起面板                                                     | -                                                           |
 | focus             | 展开面板                                                     | -                                                           |
-| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | -                                                           |
+| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项       |
 | getCheckedValues  | 获取选中的值                                                 | -                                                           |
 | clearCheckedNodes | 清空选中的节点                                               | -                                                           |
 | expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                   |

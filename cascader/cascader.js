@@ -126,9 +126,11 @@ layui.define(["jquery"], function (exports) {
       var cascader = this.cascader;
       var showAllLevels = this.config.showAllLevels;
       var disabled = this.config.disabled;
+      var nodeDisabled = this.disabled;
+      var disabledFixed = this.config.disabledFixed;
 
       var label = this.getPathLabel(showAllLevels);
-      var $tag = cascader.get$tag(label, !disabled);
+      var $tag = cascader.get$tag(label, !disabled && (!nodeDisabled || !disabledFixed));
       var self = this;
       $tag.find('i').click(function (event) {
         event.stopPropagation();
@@ -373,13 +375,6 @@ layui.define(["jquery"], function (exports) {
         this.$checked.find('.el-checkbox__input').addClass('is-indeterminate');
       }
 
-      if (this.disabled) {
-        $li.addClass('is-disabled');
-        $checked.addClass('is-disabled');
-        $checked.find('.el-checkbox__input').addClass('is-disabled');
-        return;
-      }
-
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
@@ -389,11 +384,18 @@ layui.define(["jquery"], function (exports) {
           $li.addClass('in-active-path');
           // 添加下级菜单
           cascader._appendMenu(childrenNode, level + 1, self);
-        } else {
+        } else if (!self.disabled) {
           // 最后一级就默认选择
           self.selectedValue();
         }
       });
+
+      if (this.disabled) {
+        $li.addClass('is-disabled');
+        $checked.addClass('is-disabled');
+        $checked.find('.el-checkbox__input').addClass('is-disabled');
+        return;
+      }
 
       // 选中事件
       $checked.click(function (event) {
@@ -412,7 +414,7 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var checkedNodeIds = cascader.data.checkedNodeIds;
-      var checkedNodePaths = cascader.data.checkedNodePaths;
+      var checkedNodes = cascader.data.checkedNodes;
       var nodeId = this.nodeId;
 
       $li.addClass('el-cascader-node is-selectable');
@@ -423,7 +425,7 @@ layui.define(["jquery"], function (exports) {
       $li.prepend($checked);
 
       // 渲染
-      var exist = checkedNodePaths.some(function (node) {
+      var exist = checkedNodes.some(function (node) {
         return node.path.some(function (node) {
           return node.nodeId === nodeId;
         })
@@ -515,22 +517,28 @@ layui.define(["jquery"], function (exports) {
         cascader._setActiveValue(nodeId, this);
       } else if (multiple) {
         var checkedNodeIds = cascader.data.checkedNodeIds;
-        var checkedNodePaths = cascader.data.checkedNodePaths;
-        var checked = this._checked;
+        var checkedNodes = cascader.data.checkedNodes;
+        var disabledFixed = this.config.disabledFixed;
         var paths;
         if (checkStrictly) {
           var index = checkedNodeIds.indexOf(nodeId);
           if (index === -1) {
-            paths = checkedNodePaths.concat([this]);
+            paths = checkedNodes.concat([this]);
           } else {
-            paths = checkedNodePaths.concat();
+            paths = checkedNodes.concat();
             paths.splice(index, 1);
           }
         } else {
           var allLeafChildren = this.getAllLeafChildren();
+          var checked;
+          if (this._checked !== 1 && disabledFixed) {
+            checked = this._getMultipleChecked(allLeafChildren);
+          } else {
+            checked = this._checked;
+          }
           if (checked === 1) {
             // 选中->未选中
-            paths = checkedNodePaths.filter(function (node1) {
+            paths = checkedNodes.filter(function (node1) {
               return !allLeafChildren.some(function (node2) {
                 return node1.nodeId === node2.nodeId;
               });
@@ -540,7 +548,7 @@ layui.define(["jquery"], function (exports) {
             var add = allLeafChildren.filter(function (node) {
               return checkedNodeIds.indexOf(node.nodeId) === -1;
             });
-            paths = checkedNodePaths.concat(add);
+            paths = checkedNodes.concat(add);
           }
         }
         var nodeIds = paths.map(function (node) {
@@ -696,34 +704,15 @@ layui.define(["jquery"], function (exports) {
         var $li = self.$li;
         var checkStrictly = self.props.checkStrictly;
         var multiple = self.props.multiple;
-        var checkedNodeIds = self.checkedNodeIds;
+        var disabledFixed = self.config.disabledFixed;
         if (!multiple || checkStrictly) {
           return;
         }
-        var allLeafChildren = self.getAllLeafChildren();
-        allLeafChildren = allLeafChildren.map(function (node) {
-          return node.nodeId;
-        });
+        var allLeafChildren = self.getAllLeafChildren(disabledFixed);
         // 全部未选中 0
         // 全部选中 1
         // 部分选中 2
-        var checked = 0;
-        for (var i = 0; i < allLeafChildren.length; i++) {
-          var child = allLeafChildren[i];
-          if (checked === 2) {
-            break;
-          }
-          if (checkedNodeIds.indexOf(child) !== -1) {
-            if (i > 0 && checked !== 1) {
-              checked = 2;
-            } else {
-              checked = 1;
-            }
-          } else {
-            // 当全部选中时，则改为部分选中，否则全部未选中
-            checked = checked === 1 ? 2 : 0;
-          }
-        }
+        var checked = self._getMultipleChecked(allLeafChildren);
         self._checked = checked;
         if (!$li) {
           return;
@@ -750,10 +739,10 @@ layui.define(["jquery"], function (exports) {
         if (!$li || !multiple || !checkStrictly) {
           return;
         }
-        var checkedNodePaths = self.cascader.data.checkedNodePaths;
+        var checkedNodes = self.cascader.data.checkedNodes;
         var checkedNodeIds = self.checkedNodeIds;
         var nodeId = self.nodeId;
-        var exist = checkedNodePaths.some(function (node) {
+        var exist = checkedNodes.some(function (node) {
           return node.path.some(function (node) {
             return node.nodeId === nodeId;
           });
@@ -807,6 +796,34 @@ layui.define(["jquery"], function (exports) {
           cascader._appendMenu(childrenNode, node.level + 1, node.parentNode);
         }
       });
+    },
+    _getMultipleChecked: function (leafNodes) {
+      var cascader = this.cascader;
+      var checkedNodeIds = cascader.data.checkedNodeIds;
+      var allLeafIds = leafNodes.map(function (node) {
+        return node.nodeId;
+      });
+      // 全部未选中 0
+      // 全部选中 1
+      // 部分选中 2
+      var checked = 0;
+      for (var i = 0; i < allLeafIds.length; i++) {
+        var child = allLeafIds[i];
+        if (checked === 2) {
+          break;
+        }
+        if (checkedNodeIds.indexOf(child) !== -1) {
+          if (i > 0 && checked !== 1) {
+            checked = 2;
+          } else {
+            checked = 1;
+          }
+        } else {
+          // 当全部选中时，则改为部分选中，否则全部未选中
+          checked = checked === 1 ? 2 : 0;
+        }
+      }
+      return checked;
     }
   };
 
@@ -833,9 +850,10 @@ layui.define(["jquery"], function (exports) {
       beforeFilter: function (value) {
         return true;
       },//筛选之前的钩子，参数为输入的值，若返回 false,则停止筛选
-      popperClass: '',      //	自定义浮层类名	string
+      popperClass: '',        //	自定义浮层类名	string
       extendClass: false,     //继承class样式
       extendStyle: false,     //继承style样式
+      disabledFixed: false,   //固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加
       props: {
         expandTrigger: 'click', //次级菜单的展开方式	string	click / hover	'click'
         multiple: false,	      //是否多选	boolean	-	false
@@ -856,7 +874,7 @@ layui.define(["jquery"], function (exports) {
       activeNodeId: null,   //存放NodeId
       activeNode: null,     //存放Node
       checkedNodeIds: [],   //存放多个NodeId
-      checkedNodePaths: []  //存放多个Node
+      checkedNodes: []  //存放多个Node
     };
     // 面板是否展开
     this.showPanel = false;
@@ -1312,12 +1330,12 @@ layui.define(["jquery"], function (exports) {
      * @private
      */
     _setCheckedValue: function (nodeIds, nodes) {
-      var checkedNodePaths = this.data.checkedNodePaths;
+      var checkedNodes = this.data.checkedNodes;
       this.data.checkedNodeIds = nodeIds || [];
-      this.data.checkedNodePaths = nodes || [];
+      this.data.checkedNodes = nodes || [];
       var syncPath = [];
       var syncNodeIds = [];
-      checkedNodePaths.forEach(function (node) {
+      checkedNodes.forEach(function (node) {
         node.path.forEach(function (node) {
           if (syncNodeIds.indexOf(node.nodeId) === -1) {
             syncPath.push(node);
@@ -1357,9 +1375,12 @@ layui.define(["jquery"], function (exports) {
       var nodes = this.getNodes(this.data.nodes);
       var checkStrictly = this.props.checkStrictly;
       var multiple = this.props.multiple;
+      var disabledFixed = this.config.disabledFixed;
       if (multiple) {
         var paths = nodes.filter(function (node) {
-          return (checkStrictly || node.leaf) && value.indexOf(node.value) !== -1;
+          return (checkStrictly || node.leaf)
+            && (!node.disabled || disabledFixed)
+            && value.indexOf(node.value) !== -1;
         });
         var nodeIds = paths.map(function (node) {
           return node.nodeId;
@@ -1491,14 +1512,14 @@ layui.define(["jquery"], function (exports) {
         var $tagsInput = this.$tagsInput;
         // 清除高度
         $inputRow.css('height', '');
-        var checkedNodePaths = this.data.checkedNodePaths;
+        var checkedNodes = this.data.checkedNodes;
         var minCollapseTagsNumber = Math.max(this.config.minCollapseTagsNumber, 1);
-        if (checkedNodePaths.length > 0) {
+        if (checkedNodes.length > 0) {
           var tags = [];
-          var paths = checkedNodePaths;
+          var paths = checkedNodes;
           if (collapseTags) {
             // 折叠tags
-            paths = checkedNodePaths.slice(0, Math.min(checkedNodePaths.length, minCollapseTagsNumber));
+            paths = checkedNodes.slice(0, Math.min(checkedNodes.length, minCollapseTagsNumber));
           }
           paths.forEach(function (node) {
             tags.push(node.$tag);
@@ -1506,8 +1527,8 @@ layui.define(["jquery"], function (exports) {
           // 判断标签是否折叠
           if (collapseTags) {
             // 判断标签最小折叠数
-            if (checkedNodePaths.length > minCollapseTagsNumber) {
-              tags.push(self.get$tag('+ ' + (checkedNodePaths.length - minCollapseTagsNumber), false));
+            if (checkedNodes.length > minCollapseTagsNumber) {
+              tags.push(self.get$tag('+ ' + (checkedNodes.length - minCollapseTagsNumber), false));
             }
           }
           tags.forEach(function (tag) {
@@ -1525,7 +1546,7 @@ layui.define(["jquery"], function (exports) {
         }
         // 重新定位
         this._resetXY();
-        if (checkedNodePaths.length > 0) {
+        if (checkedNodes.length > 0) {
           $inputRow.removeAttr('placeholder');
           $tagsInput && $tagsInput.removeAttr('placeholder', placeholder);
         } else {
@@ -1706,7 +1727,7 @@ layui.define(["jquery"], function (exports) {
      */
     getCheckedValues: function () {
       if (this.props.multiple) {
-        return this.data.checkedNodePaths.map(function (node) {
+        return this.data.checkedNodes.map(function (node) {
           return node.value;
         });
       } else {
@@ -1719,7 +1740,7 @@ layui.define(["jquery"], function (exports) {
      */
     getCheckedNodes: function () {
       if (this.props.multiple) {
-        return this.data.checkedNodePaths;
+        return this.data.checkedNodes;
       } else {
         return this.data.activeNode;
       }
@@ -1727,10 +1748,23 @@ layui.define(["jquery"], function (exports) {
     /**
      * 清空选中的节点
      */
-    clearCheckedNodes: function () {
+    clearCheckedNodes: function (force) {
       var multiple = this.props.multiple;
       if (multiple) {
-        this._setCheckedValue([], []);
+        var disabledFixed = this.config.disabledFixed;
+        if (!force && disabledFixed) {
+          //禁用项被固定，则过滤出禁用项的选值出来
+          var checkedNodes = this.data.checkedNodes;
+          var disNodes = checkedNodes.filter(function (node) {
+            return node.disabled;
+          });
+          var nodeIds = disNodes.map(function (node) {
+            return node.nodeId;
+          });
+          this._setCheckedValue(nodeIds, disNodes);
+        } else {
+          this._setCheckedValue([], []);
+        }
       } else {
         this._setActiveValue(null, null);
       }

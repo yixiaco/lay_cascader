@@ -797,11 +797,13 @@ layui.use('layCascader', function () {
 layui.use('layCascader', function () {
     var layCascader = layui.layCascader;
     layCascader({
+      clearable: true,
+      disabledFixed: true,  //固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加
       props: {
         multiple: true
       },
       elem: '#duoXuanHuiXian',
-      value: ['dingbudaohang', 'layout'],
+      value: ['yizhi', 'dingbudaohang', 'layout', 'cexiangdaohang'],
       options: options
     });
 });
@@ -865,8 +867,10 @@ layui.use('layCascader', function () {
         multiple: true,
         checkStrictly: true
       },
+      disabledFixed: true,  //固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加
+      clearable: true,
       elem: '#duoXuanHuiXian2',
-      value: ['shejiyuanze', 'layout'],
+      value: ['shejiyuanze', 'layout', 'cexiangdaohang'],
       options: options
     });
 });
@@ -1076,6 +1080,13 @@ layui.use('layCascader', function () {
             <td>true / false</td>
             <td>false</td>
         </tr>
+        <tr>
+            <td>disabledFixed</td>
+            <td>固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -1213,7 +1224,7 @@ layui.use('layCascader', function () {
         <tr>
             <td>getCheckedNodes</td>
             <td>获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象</td>
-            <td>-</td>
+            <td>Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项</td>
         </tr>
         <tr>
             <td>getCheckedValues</td>
@@ -1260,6 +1271,7 @@ layui.use('layCascader', function () {
       value: 'daohang',
       label: '导航',
       children: [{
+        disabled: true,
         value: 'cexiangdaohang',
         label: '侧向导航'
       }, {
@@ -1777,13 +1789,13 @@ layui.use('layCascader', function () {
     });
     // 多选回显
     layCascader({
-      // disabled: true,
       clearable: true,
+      disabledFixed: true,  //固定禁用项
       props: {
         multiple: true
       },
       elem: '#duoXuanHuiXian',
-      value: ['yizhi','dingbudaohang', 'layout'],
+      value: ['yizhi', 'dingbudaohang', 'layout', 'cexiangdaohang'],
       options: options
     });
     // 单选无关联回显
@@ -1802,9 +1814,10 @@ layui.use('layCascader', function () {
         multiple: true,
         checkStrictly: true
       },
+      disabledFixed: true,  //固定禁用项
       clearable: true,
       elem: '#duoXuanHuiXian2',
-      value: ['shejiyuanze', 'layout'],
+      value: ['shejiyuanze', 'layout', 'cexiangdaohang'],
       options: options
     });
     var id = 0;
@@ -1813,7 +1826,7 @@ layui.use('layCascader', function () {
       elem: '#demo14',
       props: {
         lazy: true,
-        lazyLoad: function(node, resolve) {
+        lazyLoad: function (node, resolve) {
           var level = node.level;
           setTimeout(function () {
             var nodes = Array.from({length: level + 2})
