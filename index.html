@@ -884,6 +884,50 @@ layui.use('layCascader', function () {
         </div>
     </div>
 </div>
+<!--多选数量限制-->
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>多选数量限制</legend>
+</fieldset>
+<blockquote class="layui-elem-quote">
+    通过maxSize开启多选最大数量限制，该属性对单选无效果。默认值为0，表示的是无限制选中最大个数，大于0则表示限制选中个数。
+</blockquote>
+
+<div class="layui-bg-gray" style="padding: 30px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-panel">
+                <div class="layui-card">
+                    <div class="layui-card-header">多选数量限制</div>
+                    <div style="margin: 10px 20px;"><input id="demo15"/></div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">代码</h2>
+                                <div class="layui-colla-content">
+                             <pre class="layui-code">
+&lt;input id="demo15"/&gt;
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    layCascader({
+      clearable: true,
+      maxSize: 3,
+      props: {
+        multiple: true
+      },
+      elem: '#demo15',
+      options: options
+    });
+});
+                             </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!--动态加载-->
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
     <legend>动态加载</legend>
@@ -1086,6 +1130,13 @@ layui.use('layCascader', function () {
             <td>Boolean</td>
             <td>true / false</td>
             <td>false</td>
+        </tr>
+        <tr>
+            <td>maxSize</td>
+            <td>多选选中的最大数量，0表示不限制</td>
+            <td>Number</td>
+            <td>>=0</td>
+            <td>0</td>
         </tr>
         </tbody>
     </table>
@@ -1796,6 +1847,15 @@ layui.use('layCascader', function () {
       },
       elem: '#duoXuanHuiXian',
       value: ['yizhi', 'dingbudaohang', 'layout', 'cexiangdaohang'],
+      options: options
+    });
+    layCascader({
+      clearable: true,
+      maxSize: 3,
+      props: {
+        multiple: true
+      },
+      elem: '#demo15',
       options: options
     });
     // 单选无关联回显

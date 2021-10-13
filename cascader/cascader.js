@@ -1,7 +1,8 @@
 /**
  * 仿element-ui，级联选择器
- * 已实现单选，多选，无关联选择
- * 其他功能：组件禁用、节点禁用、自定义属性、自定义空面板，自定义无选择时的提示、多选标签折叠、回显、搜索、动态加载等操作。
+ * 已实现单选、多选、无关联选择
+ * 其他功能：组件禁用、节点禁用、自定义属性、自定义空面板提示，自定义无选择时的提示、多选标签折叠、回显、搜索、动态加载、最大选中数量限制、禁用项固定等操作。
+ * element-ui没有的功能：最大选中数量限制、禁用项固定
  * author: yixiaco
  * gitee: https://gitee.com/yixiacoco/lay_cascader
  * github: https://github.com/yixiaco/lay_cascader
@@ -13,7 +14,7 @@ layui.define(["jquery"], function (exports) {
    * 级联各项节点对象
    * @param data        原始对象信息
    * @param cascader    级联对象
-   * @param level       层级
+   * @param level       层级，从0开始
    * @param parentNode 父节点对象
    * @constructor
    */
@@ -24,6 +25,7 @@ layui.define(["jquery"], function (exports) {
     this.props = cascader.props;
     this.level = level;
     this.parentNode = parentNode;
+    // 引入的icon图标
     this.icons = cascader.icons;
     //该节点是否被选中 0:未选中，1：选中，2：不定
     this._checked = 0;
@@ -70,8 +72,31 @@ layui.define(["jquery"], function (exports) {
     },
     /** 是否禁用 */
     get disabled() {
+      var multiple = this.props.multiple;
+      var maxSize = this.config.maxSize;
+      var checkedNodeIds = this.cascader.data.checkedNodeIds;
       var disabledName = this.props.disabled;
       var checkStrictly = this.props.checkStrictly;
+      // 检查是否超过最大值限制
+      if (multiple && maxSize !== 0) {
+        if (checkedNodeIds.length >= maxSize && checkedNodeIds.indexOf(this.nodeId) === -1) {
+          // 如果是关联的多选，需要查询叶子节点是否有被选中的项
+          if (!checkStrictly) {
+            var leafChildren = this.getAllLeafChildren();
+            var nodeIds = leafChildren.map(function (value) {
+              return value.nodeId
+            });
+            // 如果叶子节点不包含，则直接返回true
+            if (!nodeIds.some(function (nodeId) {
+              return checkedNodeIds.indexOf(nodeId) !== -1;
+            })) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }
+      }
       if (!checkStrictly) {
         var path = this.path;
         return path.some(function (node) {
@@ -260,6 +285,7 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var activeNode = this.cascader.data.activeNode;
+      var parentNode = this.parentNode;
 
       if (self.activeNodeId && activeNode.path.some(function (node) {
         return node.nodeId === nodeId;
@@ -279,6 +305,11 @@ layui.define(["jquery"], function (exports) {
 
       $li.addClass('is-selectable');
 
+      if (parentNode) {
+        parentNode.$li.siblings().removeClass('in-active-path');
+        parentNode.$li.addClass('in-active-path');
+      }
+
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
@@ -287,9 +318,6 @@ layui.define(["jquery"], function (exports) {
           self.selectedValue();
           // 关闭面板
           cascader.blur();
-        } else {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
         }
         // 添加下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -307,20 +335,23 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var activeNode = cascader.data.activeNode;
+      var parentNode = this.parentNode;
 
       $li.addClass('is-selectable');
       // 任意一级单选
       var $radio = $('<label role="radio" tabindex="0" class="el-radio"><span class="el-radio__input"><span class="el-radio__inner"></span><input type="radio" aria-hidden="true" tabindex="-1" class="el-radio__original" value="' + nodeId + '"></span><span class="el-radio__label"><span></span></span></label>');
       this.$radio = $radio;
       $li.prepend($radio);
+      if (parentNode) {
+        parentNode.$li.siblings().removeClass('in-active-path');
+        parentNode.$li.addClass('in-active-path');
+      }
 
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
         if (!leaf) {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
           // 添加下级菜单
           cascader._appendMenu(childrenNode, level + 1, self);
         } else if (!self.disabled) {
@@ -360,6 +391,7 @@ layui.define(["jquery"], function (exports) {
       var self = this;
       var cascader = this.cascader;
       var checked = this._checked;
+      var parentNode = this.parentNode;
 
       $li.addClass('el-cascader-node');
 
@@ -375,13 +407,16 @@ layui.define(["jquery"], function (exports) {
         this.$checked.find('.el-checkbox__input').addClass('is-indeterminate');
       }
 
+      if (parentNode) {
+        parentNode.$li.siblings().removeClass('in-active-path');
+        parentNode.$li.addClass('in-active-path');
+      }
+
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
         if (!leaf) {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
           // 添加下级菜单
           cascader._appendMenu(childrenNode, level + 1, self);
         } else if (!self.disabled) {
@@ -400,7 +435,11 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $checked.click(function (event) {
         event.preventDefault();
-        !leaf && self.selectedValue();
+        if (!leaf) {
+          var childrenNode = self.childrenNode;
+          self.selectedValue();
+          cascader._appendMenu(childrenNode, level + 1, self);
+        }
       });
     },
     /**
@@ -416,6 +455,7 @@ layui.define(["jquery"], function (exports) {
       var checkedNodeIds = cascader.data.checkedNodeIds;
       var checkedNodes = cascader.data.checkedNodes;
       var nodeId = this.nodeId;
+      var parentNode = this.parentNode;
 
       $li.addClass('el-cascader-node is-selectable');
 
@@ -437,13 +477,16 @@ layui.define(["jquery"], function (exports) {
         }
       }
 
+      if (parentNode) {
+        parentNode.$li.siblings().removeClass('in-active-path');
+        parentNode.$li.addClass('in-active-path');
+      }
+
       // 触发下一个节点
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
         if (!leaf) {
-          $li.siblings().removeClass('in-active-path');
-          $li.addClass('in-active-path');
           // 添加下级菜单
           cascader._appendMenu(childrenNode, level + 1, self);
         } else if (!self.disabled) {
@@ -460,7 +503,12 @@ layui.define(["jquery"], function (exports) {
       // 选中事件
       $checked.click(function (event) {
         event.preventDefault();
-        !leaf && self.selectedValue();
+        if (!leaf) {
+          self.selectedValue();
+          var childrenNode = self.childrenNode;
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
+        }
       });
     },
     /**
@@ -766,7 +814,7 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 获取叶子节点value值
-     * @param disabled 是否包含禁用
+     * @param disabled 是否包含禁用,默认不包含
      * @returns {Node[]|*[]}
      */
     getAllLeafChildren: function (disabled) {
@@ -854,6 +902,7 @@ layui.define(["jquery"], function (exports) {
       extendClass: false,     //继承class样式
       extendStyle: false,     //继承style样式
       disabledFixed: false,   //固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加
+      maxSize: 0,           // 多选选中的最大数量，0表示不限制
       props: {
         expandTrigger: 'click', //次级菜单的展开方式	string	click / hover	'click'
         multiple: false,	      //是否多选	boolean	-	false
@@ -869,8 +918,9 @@ layui.define(["jquery"], function (exports) {
       }
     }, config);
     this.data = {
-      nodeId: 0,            //nodeId的增值
+      nodeId: 0,            //nodeId的自增值
       nodes: [],            //存储Node对象
+      menuData: [],         //压入菜单的数据
       activeNodeId: null,   //存放NodeId
       activeNode: null,     //存放Node
       checkedNodeIds: [],   //存放多个NodeId
@@ -886,6 +936,8 @@ layui.define(["jquery"], function (exports) {
     this._init();
     // 面板关闭事件id
     this.blurEventId = 0;
+    // 是否进入maxSize模式
+    this._maxSizeMode = false;
   }
 
   Cascader.prototype = {
@@ -911,6 +963,12 @@ layui.define(["jquery"], function (exports) {
         this.$tagsInput && this.$tagsInput.val('')
       }
     },
+    set maxSizeMode(maxSizeMode) {
+      if (this._maxSizeMode !== maxSizeMode) {
+        this._maxSizeMode = maxSizeMode;
+        this.refreshMenu();
+      }
+    },
     icons: {
       from: 'layui-icon',
       down: 'layui-icon-down',
@@ -921,9 +979,7 @@ layui.define(["jquery"], function (exports) {
     },
     // 初始化
     _init: function () {
-      if (!this.config.elem) {
-        throw "缺少elem节点选择器";
-      }
+      this._checkConfig();
       // 初始化输入框
       this._initInput();
       // 初始化面板
@@ -953,6 +1009,21 @@ layui.define(["jquery"], function (exports) {
       });
     },
     /**
+     * 检查配置
+     * @private
+     */
+    _checkConfig: function () {
+      if (!this.config.elem || $(this.config.elem).length === 0) {
+        throw "缺少elem节点选择器";
+      }
+      if (typeof this.config.maxSize !== 'number' || this.config.maxSize < 0) {
+        throw "maxSize应是一个大于等于0的有效的number值";
+      }
+      if (!Array.isArray(this.config.options)) {
+        throw "options不是一个有效的数组";
+      }
+    },
+    /**
      * 初始化根目录
      * @private
      */
@@ -979,6 +1050,7 @@ layui.define(["jquery"], function (exports) {
      * @param options
      */
     setOptions: function (options) {
+      this.config.options = options;
       // 初始化节点
       this.data.nodes = this.initNodes(options, 0, null);
       // 初始化根目录
@@ -1156,7 +1228,7 @@ layui.define(["jquery"], function (exports) {
 
       if (multiple) {
         // 多选可搜索
-        this.$tagsInput = $('<input type="text" placeholder="' + placeholder + '" class="el-cascader__search-input">');
+        this.$tagsInput = $('<input type="text" autocomplete="off" placeholder="' + placeholder + '" class="el-cascader__search-input">');
         var $tagsInput = this.$tagsInput;
         this.$tags.append($tagsInput);
         $tagsInput.on('keydown', filter);
@@ -1197,11 +1269,12 @@ layui.define(["jquery"], function (exports) {
     /**
      * 添加菜单(panel(1)->menu(n))
      * @param nodes 当前层级数据
-     * @param level
-     * @param parentNode
+     * @param level 层级，从0开始
+     * @param parentNode 父级节点
+     * @param _menuItem 刷新时，传入的当前菜单的item数据
      * @private
      */
-    _appendMenu: function (nodes, level, parentNode) {
+    _appendMenu: function (nodes, level, parentNode, _menuItem) {
       var $div = $('<div class="el-scrollbar el-cascader-menu" role="menu" id="cascader-menu"><div class="el-cascader-menu__wrap el-scrollbar__wrap" style="margin-bottom: -17px; margin-right: -17px;"><ul class="el-scrollbar__view el-cascader-menu__list"></ul></div></div>');
       // 除了上一层的所有菜单全部移除
       var number = level - 1;
@@ -1218,10 +1291,20 @@ layui.define(["jquery"], function (exports) {
       this.$panel.find('.el-cascader-panel').append($div);
       // 渲染细项
       this._appendLi($div, nodes);
+      var menuItem = {nodes: nodes, level: level, parentNode: parentNode, scrollbar: {top: 0, left: 0}};
+      if (_menuItem) {
+        menuItem.scrollbar = _menuItem.scrollbar
+      }
       // 渲染滚动条
-      this._initScrollbar($div);
+      this._initScrollbar($div, menuItem);
       // 重新定位面板
       this._resetXY();
+      // 保存菜单数据
+      var menuData = this.data.menuData;
+      if (menuData.length > level) {
+        menuData.splice(level, menuData.length - level);
+      }
+      menuData.push(menuItem);
     },
     /**
      * 添加细项(panel(1)->menu(n)->li(n))
@@ -1239,6 +1322,17 @@ layui.define(["jquery"], function (exports) {
       $.each(nodes, function (index, node) {
         node.bind($list);
       });
+    },
+    /**
+     * 刷新菜单面板
+     */
+    refreshMenu: function () {
+      // 先复制一个数组，避免刷新菜单时，数组的数据被改变
+      var data = this.data.menuData.concat([]);
+      var self = this;
+      data.forEach(function (data) {
+        self._appendMenu(data.nodes, data.level, data.parentNode, data);
+      })
     },
     /**
      * 初始化可搜索面板
@@ -1331,6 +1425,15 @@ layui.define(["jquery"], function (exports) {
      */
     _setCheckedValue: function (nodeIds, nodes) {
       var checkedNodes = this.data.checkedNodes;
+      var maxSize = this.config.maxSize;
+      var maxSizeMode;
+      if (nodeIds.length > 0 && maxSize !== 0 && nodeIds.length >= maxSize) {
+        nodeIds = nodeIds.slice(0, maxSize);
+        nodes = nodes.slice(0, maxSize);
+        maxSizeMode = true
+      } else {
+        maxSizeMode = false
+      }
       this.data.checkedNodeIds = nodeIds || [];
       this.data.checkedNodes = nodes || [];
       var syncPath = [];
@@ -1359,6 +1462,7 @@ layui.define(["jquery"], function (exports) {
         return node.value;
       }), nodes);
       this._setClear();
+      this.maxSizeMode = maxSizeMode;
     },
     /**
      * 设置值
@@ -1426,8 +1530,13 @@ layui.define(["jquery"], function (exports) {
       });
       return container;
     },
-    // 初始化滚动条
-    _initScrollbar: function ($menu) {
+    /**
+     * 初始化滚动条
+     * @param $menu   菜单的dom节点对戏
+     * @param menuItem 当前菜单数据
+     * @private
+     */
+    _initScrollbar: function ($menu, menuItem) {
       var $div = $('<div class="el-scrollbar__bar is-onhoriztal"><div class="el-scrollbar__thumb" style="transform: translateX(0%);"></div></div><div class="el-scrollbar__bar is-vertical"><div class="el-scrollbar__thumb" style="transform: translateY(0%);"></div></div>');
       $menu.append($div);
       var vertical = $($div[1]).find('.el-scrollbar__thumb');
@@ -1440,14 +1549,14 @@ layui.define(["jquery"], function (exports) {
       var wScale = $panel.width() / $lis.width();
 
       // 滚动条监听事件
-      function _scrollbarEvent($scroll) {
+      function _scrollbarEvent(scrollTop, scrollLeft) {
         if (hScale < 1) {
           vertical.css('height', hScale * 100 + '%');
-          vertical.css('transform', 'translateY(' + $scroll.scrollTop() / $menu.height() * 100 + '%)');
+          vertical.css('transform', 'translateY(' + scrollTop / $menu.height() * 100 + '%)');
         }
         if (wScale < 1) {
           onhoriztal.css('width', wScale * 100 + '%');
-          onhoriztal.css('transform', 'translateY(' + $scroll.scrollLeft() / $menu.width() * 100 + '%)');
+          onhoriztal.css('transform', 'translateY(' + scrollLeft / $menu.width() * 100 + '%)');
         }
       }
 
@@ -1479,11 +1588,15 @@ layui.define(["jquery"], function (exports) {
       });
       // 监听滚动条事件
       scrollbar.scroll(function () {
-        _scrollbarEvent($(this));
+        var scroll = $(this);
+        menuItem.scrollbar.top = scroll.scrollTop()
+        menuItem.scrollbar.left = scroll.scrollLeft()
+        _scrollbarEvent(menuItem.scrollbar.top, menuItem.scrollbar.left);
       });
 
       // 初始化滚动条
-      _scrollbarEvent(scrollbar);
+      scrollbar.scrollTop(menuItem.scrollbar.top);
+      _scrollbarEvent(menuItem.scrollbar.top, menuItem.scrollbar.left);
     },
     // 填充路径
     _fillingPath: function () {

@@ -30,6 +30,7 @@ layui cascader 仿element-ui级联选择器
 | extendClass           | 继承class样式                                                | Boolean                 | true / false | false      |
 | extendStyle           | 继承style样式                                                | Boolean                 | true / false | false      |
 | disabledFixed         | 固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加 | Boolean                 | true / false | false      |
+| maxSize               | 多选选中的最大数量，0表示不限制                              | Number                  | >=0          | 0          |
 
 ## Props
 
