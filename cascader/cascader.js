@@ -261,7 +261,7 @@ layui.define(["jquery"], function (exports) {
           }
         } else {
           // 关闭面板
-          cascader.blur();
+          cascader.close();
         }
       });
 
@@ -317,7 +317,7 @@ layui.define(["jquery"], function (exports) {
         if (leaf) {
           self.selectedValue();
           // 关闭面板
-          cascader.blur();
+          cascader.close();
         }
         // 添加下级菜单
         cascader._appendMenu(childrenNode, level + 1, self);
@@ -928,14 +928,20 @@ layui.define(["jquery"], function (exports) {
     };
     // 面板是否展开
     this.showPanel = false;
-    // 值变更事件
-    this.changeEvent = [];
+    this.event = {
+      // 值变更事件
+      change: [],
+      // 打开事件
+      open: [],
+      // 关闭事件
+      close: []
+    }
     // 是否正在搜索中
     this.filtering = false;
     // 初始化
     this._init();
     // 面板关闭事件id
-    this.blurEventId = 0;
+    this.closeEventId = 0;
     // 是否进入maxSize模式
     this._maxSizeMode = false;
   }
@@ -1002,9 +1008,9 @@ layui.define(["jquery"], function (exports) {
         }
         var show = self.showPanel;
         if (!show) {
-          self.focus();
+          self.open();
         } else {
-          self.blur();
+          self.close();
         }
       });
     },
@@ -1200,7 +1206,7 @@ layui.define(["jquery"], function (exports) {
             self.isFiltering = false;
             return;
           }
-          self.focus();
+          self.open();
           if (typeof beforeFilter === 'function' && beforeFilter(val)) {
             self.isFiltering = true;
             var nodes = self.getNodes();
@@ -1722,7 +1728,7 @@ layui.define(["jquery"], function (exports) {
       if (clear && !this.config.disabled && this.config.clearable) {
         self.$icon.one('click', function (event) {
           event.stopPropagation();
-          self.blur();
+          self.close();
           self.clearCheckedNodes();
           out();
           self.$icon.off('mouseenter');
@@ -1773,18 +1779,16 @@ layui.define(["jquery"], function (exports) {
       }
       // 填充路径
       this._fillingPath();
-      this.changeEvent.forEach(function (callback) {
-        if (typeof callback === 'function') {
-          callback(value, node);
-        }
-      });
+      this.event.change.forEach(function (e) {
+        typeof e === 'function' && e(value, node)
+      })
     },
     /**
      * 当失去焦点时触发  (event: Event)
-     * @param eventId 不为空时，必须与blurEventId值相等，防止旧事件触发
+     * @param eventId 不为空时，必须与closeEventId值相等，防止旧事件触发
      */
-    blur: function (eventId) {
-      if (this.showPanel && (!eventId || this.blurEventId === eventId)) {
+    close: function (eventId) {
+      if (this.showPanel && (!eventId || this.closeEventId === eventId)) {
         this.showPanel = false;
         this.$div.find('.layui-icon-down').removeClass('is-reverse');
         this.$panel.slideUp(100);
@@ -1797,19 +1801,22 @@ layui.define(["jquery"], function (exports) {
           this.isFiltering = false;
           this._fillingPath();
         }
+        this.event.close.forEach(function (e) {
+          typeof e === 'function' && e()
+        })
       }
     },
     /**
      * 当获得焦点时触发  (event: Event)
      */
-    focus: function () {
+    open: function () {
       if (!this.showPanel) {
         this.showPanel = true;
-        this.blurEventId++;
+        this.closeEventId++;
         var self = this;
         // 当前传播事件结束后，添加点击背景关闭面板事件
         setTimeout(function () {
-          $(document).one('click', self.blur.bind(self, self.blurEventId));
+          $(document).one('click', self.close.bind(self, self.closeEventId));
         });
         // 重新定位面板
         this._resetXY();
@@ -1819,6 +1826,9 @@ layui.define(["jquery"], function (exports) {
         this.visibleChange(true);
         // 聚焦颜色
         this.$input.addClass('is-focus');
+        this.event.open.forEach(function (e) {
+          typeof e === 'function' && e()
+        })
       }
     },
     /**
@@ -1906,8 +1916,22 @@ layui.define(["jquery"], function (exports) {
        * 当节点变更时，执行回调
        * @param callback  function(value,node){}
        */
-      change: function (callback) {
-        self.changeEvent.push(callback);
+      changeEvent: function (callback) {
+        self.event.change.push(callback);
+      },
+      /**
+       * 当面板关闭时，执行回调
+       * @param callback  function(){}
+       */
+      closeEvent: function (callback) {
+        self.event.close.push(callback);
+      },
+      /**
+       * 当面板打开时，执行回调
+       * @param callback  function(){}
+       */
+      openEvent: function (callback) {
+        self.event.open.push(callback);
       },
       /**
        * 禁用组件
@@ -1919,14 +1943,14 @@ layui.define(["jquery"], function (exports) {
       /**
        * 收起面板
        */
-      blur: function () {
-        self.blur();
+      close: function () {
+        self.close();
       },
       /**
        * 展开面板
        */
-      focus: function () {
-        self.focus();
+      open: function () {
+        self.open();
       },
       /**
        * 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象

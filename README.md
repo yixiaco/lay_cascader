@@ -53,12 +53,13 @@ layui cascader 仿element-ui级联选择器
 | :---------------- | :----------------------------------------------------------- | :---------------------------------------------------------- |
 | setOptions        | 设置当前选项                                                 | Array                                                       |
 | setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 单选：Object/String/Number 多选：Array                      |
-| change            | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){} |
+| changeEvent       | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){} |
+| openEvent         | 当面板打开时，执行回调                                       | function(){}                                                |
+| closeEvent        | 当面板关闭时，执行回调                                       | function(){}                                                |
 | disabled          | 禁用组件                                                     | Boolean                                                     |
-| blur              | 收起面板                                                     | -                                                           |
-| focus             | 展开面板                                                     | -                                                           |
+| close             | 收起面板                                                     | -                                                           |
+| open              | 展开面板                                                     | -                                                           |
 | getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项       |
 | getCheckedValues  | 获取选中的值                                                 | -                                                           |
 | clearCheckedNodes | 清空选中的节点                                               | -                                                           |
 | expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                   |
-

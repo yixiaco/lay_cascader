@@ -93,7 +93,7 @@ layui.use('layCascader', function () {
       elem: '#demo1_1',
       options: options
     });
-    demo1_1.change(function (value, node) {
+    demo1_1.changeEvent(function (value, node) {
       layer.msg('value:' + value + ',Node:' + JSON.stringify(node.data));
     });
 });
@@ -1253,9 +1253,19 @@ layui.use('layCascader', function () {
             <td>单选：Object/String/Number<br>多选：Array</td>
         </tr>
         <tr>
-            <td>change</td>
+            <td>changeEvent</td>
             <td>当节点变更时，执行回调<br>多选时，参数是一个数组</td>
             <td>单选：function(value,Node){}<br>多选：function(values,Nodes){}</td>
+        </tr>
+        <tr>
+            <td>openEvent</td>
+            <td>当面板打开时，执行回调</td>
+            <td>function(){}</td>
+        </tr>
+        <tr>
+            <td>closeEvent</td>
+            <td>当面板关闭时，执行回调</td>
+            <td>function(){}</td>
         </tr>
         <tr>
             <td>disabled</td>
@@ -1263,12 +1273,12 @@ layui.use('layCascader', function () {
             <td>Boolean</td>
         </tr>
         <tr>
-            <td>blur</td>
+            <td>close</td>
             <td>收起面板</td>
             <td>-</td>
         </tr>
         <tr>
-            <td>focus</td>
+            <td>open</td>
             <td>展开面板</td>
             <td>-</td>
         </tr>
@@ -1714,7 +1724,7 @@ layui.use('layCascader', function () {
       elem: '#demo1_1',
       options: options
     });
-    demo1_1.change(function (value, node) {
+    demo1_1.changeEvent(function (value, node) {
       layer.msg('value:' + value + ',Node:' + JSON.stringify(node.data));
     });
     // hover 触发子菜单 获取当前选中菜单
