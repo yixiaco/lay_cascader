@@ -1013,6 +1013,13 @@ layui.use('layCascader', function () {
             <td>null</td>
         </tr>
         <tr>
+            <td>props</td>
+            <td>配置选项，具体见下表</td>
+            <td>Object</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+        <tr>
             <td>options</td>
             <td>可选项数据源，键名可通过 props 属性配置</td>
             <td>Array</td>
@@ -1157,6 +1164,13 @@ layui.use('layCascader', function () {
         </thead>
         <tbody>
         <tr>
+            <td>strictMode</td>
+            <td>严格模式,设置value严格按照层级结构.获取的value和Node也将按照层级结构返回.<br/>例如：<br/>多选:[['zhinan','shejiyuanze','yizhi']]<br/>单选:['zhinan','shejiyuanze','yizhi']</td>
+            <td>Boolean</td>
+            <td>true / false</td>
+            <td>false</td>
+        </tr>
+        <tr>
             <td>expandTrigger</td>
             <td>次级菜单的展开方式</td>
             <td>String</td>
@@ -1284,18 +1298,18 @@ layui.use('layCascader', function () {
         </tr>
         <tr>
             <td>getCheckedNodes</td>
-            <td>获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象</td>
-            <td>Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项</td>
+            <td>获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象。严格模式下返回包含父级的层级结构</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>getCheckedValues</td>
-            <td>获取选中的值</td>
+            <td>获取选中的值.严格模式下返回包含父级的层级结构</td>
             <td>-</td>
         </tr>
         <tr>
             <td>clearCheckedNodes</td>
             <td>清空选中的节点</td>
-            <td>-</td>
+            <td>Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项</td>
         </tr>
         <tr>
             <td>expandNode</td>

@@ -13,6 +13,7 @@ layui cascader 仿element-ui级联选择器
 | :-------------------- | :----------------------------------------------------------- | :---------------------- | :----------- | :--------- |
 | elem                  | 绑定元素                                                     | String/jqueryObject/DOM | -            | -          |
 | value                 | 预设值                                                       | Object/Array            | -            | null       |
+| props                 | 配置选项，具体见下表                                         | Object                  | -            | -          |
 | options               | 可选项数据源，键名可通过 props 属性配置                      | Array                   | -            | []         |
 | empty                 | 无匹配选项时的内容                                           | String                  | -            | '暂无数据' |
 | placeholder           | 输入框占位文本                                               | String                  | -            | '请选择'   |
@@ -34,18 +35,19 @@ layui cascader 仿element-ui级联选择器
 
 ## Props
 
-| 参数          | 说明                                             | 类型                                                         | 可选值        | 默认值     |
-| :------------ | :----------------------------------------------- | :----------------------------------------------------------- | :------------ | :--------- |
-| expandTrigger | 次级菜单的展开方式                               | String                                                       | click / hover | 'click'    |
-| multiple      | 是否多选                                         | Boolean                                                      | true / false  | false      |
-| checkStrictly | 是否严格的遵守父子节点不互相关联                 | Boolean                                                      | true / false  | false      |
-| lazy          | 是否动态加载子节点，需与 lazyLoad 方法结合使用   | Boolean                                                      | true / false  | false      |
-| lazyLoad      | 加载动态数据的方法，仅在 lazy 为 true 时有效     | Function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用) | -             | -          |
-| value         | 指定选项的值为选项对象的某个属性值               | String                                                       | -             | 'value'    |
-| label         | 指定选项标签为选项对象的某个属性值               | String                                                       | -             | 'label'    |
-| children      | 指定选项的子选项为选项对象的某个属性值           | String                                                       | -             | 'children' |
-| disabled      | 指定选项的禁用为选项对象的某个属性值             | String                                                       | -             | 'disabled' |
-| leaf          | 指定选项的叶子节点的标志位为选项对象的某个属性值 | String                                                       | -             | 'leaf'     |
+| 参数          | 说明                                                         | 类型                                                         | 可选值        | 默认值     |
+| :------------ | :----------------------------------------------------------- | :----------------------------------------------------------- | :------------ | :--------- |
+| strictMode    | 严格模式,设置value严格按照层级结构.获取的value和Node也将按照层级结构返回. 例如： 多选:[['zhinan','shejiyuanze','yizhi']] 单选:['zhinan','shejiyuanze','yizhi'] | Boolean                                                      | true / false  | false      |
+| expandTrigger | 次级菜单的展开方式                                           | String                                                       | click / hover | 'click'    |
+| multiple      | 是否多选                                                     | Boolean                                                      | true / false  | false      |
+| checkStrictly | 是否严格的遵守父子节点不互相关联                             | Boolean                                                      | true / false  | false      |
+| lazy          | 是否动态加载子节点，需与 lazyLoad 方法结合使用               | Boolean                                                      | true / false  | false      |
+| lazyLoad      | 加载动态数据的方法，仅在 lazy 为 true 时有效                 | Function(node, resolve)，node为当前点击的节点，resolve为数据加载完成的回调(必须调用) | -             | -          |
+| value         | 指定选项的值为选项对象的某个属性值                           | String                                                       | -             | 'value'    |
+| label         | 指定选项标签为选项对象的某个属性值                           | String                                                       | -             | 'label'    |
+| children      | 指定选项的子选项为选项对象的某个属性值                       | String                                                       | -             | 'children' |
+| disabled      | 指定选项的禁用为选项对象的某个属性值                         | String                                                       | -             | 'disabled' |
+| leaf          | 指定选项的叶子节点的标志位为选项对象的某个属性值             | String                                                       | -             | 'leaf'     |
 
 ## Event
 
@@ -59,7 +61,7 @@ layui cascader 仿element-ui级联选择器
 | disabled          | 禁用组件                                                     | Boolean                                                     |
 | close             | 收起面板                                                     | -                                                           |
 | open              | 展开面板                                                     | -                                                           |
-| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象 | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项       |
-| getCheckedValues  | 获取选中的值                                                 | -                                                           |
-| clearCheckedNodes | 清空选中的节点                                               | -                                                           |
+| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象。严格模式下返回包含父级的层级结构 | -                                                           |
+| getCheckedValues  | 获取选中的值.严格模式下返回包含父级的层级结构                | -                                                           |
+| clearCheckedNodes | 清空选中的节点                                               | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项       |
 | expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                   |

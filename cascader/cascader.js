@@ -904,6 +904,7 @@ layui.define(["jquery"], function (exports) {
       disabledFixed: false,   //固定禁用项，使禁用项不被清理删除，禁用项只能通过函数添加或初始值添加,默认禁用项不可被函数或初始值添加
       maxSize: 0,           // 多选选中的最大数量，0表示不限制
       props: {
+        strictMode: false,      //严格模式，设置value严格按照层级结构.例如：[[1,2,3],[1,2,4]]
         expandTrigger: 'click', //次级菜单的展开方式	string	click / hover	'click'
         multiple: false,	      //是否多选	boolean	-	false
         checkStrictly: false, 	//是否严格的遵守父子节点不互相关联	boolean	-	false
@@ -1019,14 +1020,16 @@ layui.define(["jquery"], function (exports) {
      * @private
      */
     _checkConfig: function () {
-      if (!this.config.elem || $(this.config.elem).length === 0) {
-        throw "缺少elem节点选择器";
+      var elem = this.config.elem;
+      if (!elem || $(elem).length === 0) {
+        throw new Error("缺少elem节点选择器");
       }
-      if (typeof this.config.maxSize !== 'number' || this.config.maxSize < 0) {
-        throw "maxSize应是一个大于等于0的有效的number值";
+      var maxSize = this.config.maxSize;
+      if (typeof maxSize !== 'number' || maxSize < 0) {
+        throw new Error("maxSize应是一个大于等于0的有效的number值");
       }
       if (!Array.isArray(this.config.options)) {
-        throw "options不是一个有效的数组";
+        throw new Error("options不是一个有效的数组");
       }
     },
     /**
@@ -1482,15 +1485,37 @@ layui.define(["jquery"], function (exports) {
       if (!value) {
         return;
       }
+      var strictMode = this.props.strictMode;
+      if (strictMode) {
+        if (!Array.isArray(value)) {
+          throw new Error("严格模式下,value必须是一个包含父子节点数组结构.");
+        }
+      }
       var nodes = this.getNodes(this.data.nodes);
       var checkStrictly = this.props.checkStrictly;
       var multiple = this.props.multiple;
       var disabledFixed = this.config.disabledFixed;
       if (multiple) {
         var paths = nodes.filter(function (node) {
-          return (checkStrictly || node.leaf)
-            && (!node.disabled || disabledFixed)
-            && value.indexOf(node.value) !== -1;
+          if ((checkStrictly || node.leaf) && (!node.disabled || disabledFixed)) {
+            if (strictMode) {
+              // 严格模式下
+              // some:命中一个就为true
+              // every:全部命中为true
+              return value.some(function (levelValue) {
+                if (!Array.isArray(levelValue)) {
+                  throw new Error("多选严格模式下,value必须是一个二维数组结构.");
+                }
+                var path = node.path;
+                return levelValue.length === path.length && levelValue.every(function (rowValue, index) {
+                  return path[index].value === rowValue;
+                });
+              })
+            } else {
+              return value.indexOf(node.value) !== -1;
+            }
+          }
+          return false;
         });
         var nodeIds = paths.map(function (node) {
           return node.nodeId;
@@ -1504,11 +1529,24 @@ layui.define(["jquery"], function (exports) {
       } else {
         for (var i = 0; i < nodes.length; i++) {
           var node = nodes[i];
-          if ((checkStrictly || node.leaf) && node.value === value) {
-            this._setActiveValue(node.nodeId, node);
-            // 展开节点
-            node.expandPanel();
-            break;
+          if ((checkStrictly || node.leaf)) {
+            var is = false;
+            if (strictMode) {
+              // 严格模式下
+              // every:全部命中为true
+              var path = node.path;
+              is = value.length === path.length && value.every(function (rowValue, index) {
+                return path[index].value === rowValue;
+              });
+            } else if (node.value === value) {
+              is = true;
+            }
+            if (is) {
+              this._setActiveValue(node.nodeId, node);
+              // 展开节点
+              node.expandPanel();
+              break;
+            }
           }
         }
       }
@@ -1849,12 +1887,27 @@ layui.define(["jquery"], function (exports) {
      * @returns {null|[]}
      */
     getCheckedValues: function () {
+      var strictMode = this.props.strictMode;
       if (this.props.multiple) {
-        return this.data.checkedNodes.map(function (node) {
+        var checkedNodes = this.data.checkedNodes;
+        if (strictMode) {
+          return checkedNodes.map(function (node) {
+            return node.path.map(function (node1) {
+              return node1.value;
+            });
+          });
+        }
+        return checkedNodes.map(function (node) {
           return node.value;
         });
       } else {
-        return this.data.activeNode && this.data.activeNode.value;
+        var activeNode = this.data.activeNode;
+        if (strictMode) {
+          return activeNode && activeNode.path.map(function (node) {
+            return node.value;
+          })
+        }
+        return activeNode && activeNode.value;
       }
     },
     /**
@@ -1862,10 +1915,21 @@ layui.define(["jquery"], function (exports) {
      * @returns {null|[]}
      */
     getCheckedNodes: function () {
+      var strictMode = this.props.strictMode;
       if (this.props.multiple) {
-        return this.data.checkedNodes;
+        var checkedNodes = this.data.checkedNodes;
+        if (strictMode) {
+          return checkedNodes && checkedNodes.map(function (node) {
+            return node.path;
+          });
+        }
+        return checkedNodes;
       } else {
-        return this.data.activeNode;
+        var activeNode = this.data.activeNode;
+        if (strictMode) {
+          return activeNode && activeNode.path;
+        }
+        return activeNode;
       }
     },
     /**
