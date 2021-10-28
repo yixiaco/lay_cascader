@@ -919,7 +919,7 @@ layui.define(["jquery"], function (exports) {
       }
     }, config);
     this.data = {
-      nodeId: 0,            //nodeId的自增值
+      nodeId: 1,            //nodeId的自增值
       nodes: [],            //存储Node对象
       menuData: [],         //压入菜单的数据
       activeNodeId: null,   //存放NodeId
@@ -1421,7 +1421,7 @@ layui.define(["jquery"], function (exports) {
         }, true);
         // 填充路径
         this.change(node && node.value, node);
-        if (nodeId) {
+        if (nodeId !== null) {
           this._setClear();
         }
       }
