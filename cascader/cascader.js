@@ -314,7 +314,7 @@ layui.define(["jquery"], function (exports) {
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
-        if (leaf) {
+        if (leaf && event.type === 'click') {
           self.selectedValue();
           // 关闭面板
           cascader.close();
@@ -351,11 +351,11 @@ layui.define(["jquery"], function (exports) {
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
-        if (!leaf) {
+        if (!self.disabled && leaf && event.type === 'click') {
+          self.selectedValue();
+        } else {
           // 添加下级菜单
           cascader._appendMenu(childrenNode, level + 1, self);
-        } else if (!self.disabled) {
-          self.selectedValue();
         }
       });
 
@@ -416,12 +416,12 @@ layui.define(["jquery"], function (exports) {
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
-        if (!leaf) {
-          // 添加下级菜单
-          cascader._appendMenu(childrenNode, level + 1, self);
-        } else if (!self.disabled) {
+        if (!self.disabled && leaf && event.type === 'click') {
           // 最后一级就默认选择
           self.selectedValue();
+        } else {
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
         }
       });
 
@@ -486,12 +486,12 @@ layui.define(["jquery"], function (exports) {
       this._liClick(function (event) {
         event.stopPropagation();
         var childrenNode = self.childrenNode;
-        if (!leaf) {
-          // 添加下级菜单
-          cascader._appendMenu(childrenNode, level + 1, self);
-        } else if (!self.disabled) {
+        if (!self.disabled && leaf && event.type === 'click') {
           // 最后一级就默认选择
           self.selectedValue();
+        } else {
+          // 添加下级菜单
+          cascader._appendMenu(childrenNode, level + 1, self);
         }
       });
 
@@ -649,7 +649,8 @@ layui.define(["jquery"], function (exports) {
 
       if (this.props.expandTrigger === "click" || leaf) {
         $li.click(load);
-      } else if (this.props.expandTrigger === "hover") {
+      }
+      if (this.props.expandTrigger === "hover") {
         $li.mouseenter(load);
       }
     },
