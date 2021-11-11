@@ -1514,9 +1514,11 @@ layui.use('layCascader', function () {
       value: ['yizhi', 'dingbudaohang', 'layout', 'cexiangdaohang'],
       options: options
     });
+    // 多选数量限制
     layCascader({
       clearable: true,
       maxSize: 3,
+      filterable: true,
       props: {
         multiple: true
       },

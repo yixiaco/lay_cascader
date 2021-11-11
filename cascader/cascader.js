@@ -1381,7 +1381,7 @@ layui.define(["jquery"], function (exports) {
       $.each(nodes, function (index, node) {
         node.bindSuggestion($list);
       });
-      this._initScrollbar($suggestionPanel);
+      this._initScrollbar($suggestionPanel,{scrollbar: {top: 0, left: 0}});
       this._resetXY();
     },
     /**
@@ -1577,7 +1577,7 @@ layui.define(["jquery"], function (exports) {
     },
     /**
      * 初始化滚动条
-     * @param $menu   菜单的dom节点对戏
+     * @param $menu   菜单的dom节点对象
      * @param menuItem 当前菜单数据
      * @private
      */
