@@ -37,7 +37,7 @@ layui cascader 仿element-ui级联选择器
 
 | 参数          | 说明                                                         | 类型                                                         | 可选值        | 默认值     |
 | :------------ | :----------------------------------------------------------- | :----------------------------------------------------------- | :------------ | :--------- |
-| strictMode    | 严格模式,设置value严格按照层级结构.获取的value和Node也将按照层级结构返回. 例如： 多选:[['zhinan','shejiyuanze','yizhi']] 单选:['zhinan','shejiyuanze','yizhi'] | Boolean                                                      | true / false  | false      |
+| strictMode    | 严格模式,设置value严格按照层级结构.获取的value和Node也将按照层级结构返回.<br/> 例如： <br/>多选:<br/>[['zhinan','shejiyuanze','yizhi']] <br/>单选:<br/>['zhinan','shejiyuanze','yizhi'] | Boolean                                                      | true / false  | false      |
 | expandTrigger | 次级菜单的展开方式                                           | String                                                       | click / hover | 'click'    |
 | multiple      | 是否多选                                                     | Boolean                                                      | true / false  | false      |
 | checkStrictly | 是否严格的遵守父子节点不互相关联                             | Boolean                                                      | true / false  | false      |
@@ -51,17 +51,19 @@ layui cascader 仿element-ui级联选择器
 
 ## Event
 
-| 方法名            | 说明                                                         | 参数                                                        |
-| :---------------- | :----------------------------------------------------------- | :---------------------------------------------------------- |
-| setOptions        | 设置当前选项                                                 | Array                                                       |
-| setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 单选：Object/String/Number 多选：Array                      |
-| changeEvent       | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){} |
-| openEvent         | 当面板打开时，执行回调                                       | function(){}                                                |
-| closeEvent        | 当面板关闭时，执行回调                                       | function(){}                                                |
-| disabled          | 禁用组件                                                     | Boolean                                                     |
-| close             | 收起面板                                                     | -                                                           |
-| open              | 展开面板                                                     | -                                                           |
-| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象。严格模式下返回包含父级的层级结构 | -                                                           |
-| getCheckedValues  | 获取选中的值.严格模式下返回包含父级的层级结构                | -                                                           |
-| clearCheckedNodes | 清空选中的节点                                               | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项       |
-| expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                   |
+| 方法名            | 说明                                                         | 参数                                                         |
+| :---------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| setOptions        | 设置当前选项                                                 | Array                                                        |
+| setValue          | 覆盖当前值.单选时传对象，多选时传数组                        | 非严格模式下。<br>单选：options中的value值<br/>多选：options中的value值组成的数组<br/> 例如：<br/>layCascader.setValue('yizhi') <br/>layCascader.setValue(['yizhi','table']) |
+| changeEvent       | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){}  |
+| openEvent         | 当面板打开时，执行回调                                       | function(){}                                                 |
+| closeEvent        | 当面板关闭时，执行回调                                       | function(){}                                                 |
+| disabled          | 禁用组件                                                     | Boolean                                                      |
+| close             | 收起面板                                                     | -                                                            |
+| open              | 展开面板                                                     | -                                                            |
+| getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象。严格模式下返回包含父级的层级结构 | -                                                            |
+| getCheckedValues  | 获取选中的值.严格模式下返回包含父级的层级结构                | -                                                            |
+| clearCheckedNodes | 清空选中的节点                                               | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项        |
+| expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                    |
+| getConfig         | 获取当前配置副本                                             | -                                                            |
+| getData           | 获取数据对象副本                                             | -                                                            |

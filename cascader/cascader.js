@@ -1158,8 +1158,8 @@ layui.define(["jquery"], function (exports) {
       // 替换元素
       $e.replaceWith(this.$div);
       this.$icon = this.$input.find('i');
-      this.disabled(this.config.disabled);
       this._initFilterableInputEvent();
+      this.disabled(this.config.disabled);
     },
     /**
      * 初始化隐藏元素input，主要用于layui的表单验证
@@ -1784,13 +1784,16 @@ layui.define(["jquery"], function (exports) {
     // 禁用
     disabled: function (isDisabled) {
       this.config.disabled = !!isDisabled;
-      this.$input.attr('disabled', this.config.disabled ? 'disabled' : '');
       if (this.config.disabled) {
         this.$div.addClass('is-disabled');
         this.$div.find('.el-input--suffix').addClass('is-disabled');
+        this.$inputRow.attr('disabled', 'disabled');
+        this.$tagsInput && this.$tagsInput.attr('disabled', 'disabled').hide()
       } else {
         this.$div.removeClass('is-disabled');
         this.$div.find('.el-input--suffix').removeClass('is-disabled');
+        this.$inputRow.removeAttr('disabled');
+        this.$tagsInput && this.$tagsInput.removeAttr('disabled').show();
       }
       // 重新设置是否可被清理
       this._setClear();
@@ -2051,6 +2054,19 @@ layui.define(["jquery"], function (exports) {
             break;
           }
         }
+      },
+      /**
+       * 获取当前配置副本
+       */
+      getConfig: function () {
+        return $.extend(true, {}, self.config);
+      },
+      /**
+       * 获取数据对象副本
+       * @returns {*}
+       */
+      getData: function () {
+        return $.extend(true, {}, self.data);
       }
     };
   };
