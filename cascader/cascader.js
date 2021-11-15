@@ -353,10 +353,9 @@ layui.define(["jquery"], function (exports) {
         var childrenNode = self.childrenNode;
         if (!self.disabled && leaf && event.type === 'click') {
           self.selectedValue();
-        } else {
-          // 添加下级菜单
-          cascader._appendMenu(childrenNode, level + 1, self);
         }
+        // 添加下级菜单
+        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       if (self.activeNodeId && activeNode.path.some(function (node) {
@@ -419,10 +418,9 @@ layui.define(["jquery"], function (exports) {
         if (!self.disabled && leaf && event.type === 'click') {
           // 最后一级就默认选择
           self.selectedValue();
-        } else {
-          // 添加下级菜单
-          cascader._appendMenu(childrenNode, level + 1, self);
         }
+        // 添加下级菜单
+        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       if (this.disabled) {
@@ -489,10 +487,9 @@ layui.define(["jquery"], function (exports) {
         if (!self.disabled && leaf && event.type === 'click') {
           // 最后一级就默认选择
           self.selectedValue();
-        } else {
-          // 添加下级菜单
-          cascader._appendMenu(childrenNode, level + 1, self);
         }
+        // 添加下级菜单
+        cascader._appendMenu(childrenNode, level + 1, self);
       });
 
       if (this.disabled) {
@@ -1285,18 +1282,14 @@ layui.define(["jquery"], function (exports) {
      * @private
      */
     _appendMenu: function (nodes, level, parentNode, _menuItem) {
-      var $div = $('<div class="el-scrollbar el-cascader-menu" role="menu" id="cascader-menu"><div class="el-cascader-menu__wrap el-scrollbar__wrap" style="margin-bottom: -17px; margin-right: -17px;"><ul class="el-scrollbar__view el-cascader-menu__list"></ul></div></div>');
-      // 除了上一层的所有菜单全部移除
-      var number = level - 1;
-      if (number !== -1) {
-        this.$panel.find('.el-cascader-panel .el-cascader-menu:gt(' + number + ')').remove();
-      } else {
-        this.$panel.find('.el-cascader-panel .el-cascader-menu').remove();
-      }
+      this._removeMenu(level);
 
       if (parentNode && parentNode.leaf) {
         return;
       }
+
+      var menuData = this.data.menuData;
+      var $div = $('<div class="el-scrollbar el-cascader-menu" role="menu" id="cascader-menu"><div class="el-cascader-menu__wrap el-scrollbar__wrap" style="margin-bottom: -17px; margin-right: -17px;"><ul class="el-scrollbar__view el-cascader-menu__list"></ul></div></div>');
       // 重新添加菜单
       this.$panel.find('.el-cascader-panel').append($div);
       // 渲染细项
@@ -1309,12 +1302,26 @@ layui.define(["jquery"], function (exports) {
       this._initScrollbar($div, menuItem);
       // 重新定位面板
       this._resetXY();
+      menuData.push(menuItem);
+    },
+    /**
+     * 移除菜单
+     * @param level
+     * @private
+     */
+    _removeMenu: function(level) {
+      // 除了上一层的所有菜单全部移除
+      var number = level - 1;
+      if (number !== -1) {
+        this.$panel.find('.el-cascader-panel .el-cascader-menu:gt(' + number + ')').remove();
+      } else {
+        this.$panel.find('.el-cascader-panel .el-cascader-menu').remove();
+      }
       // 保存菜单数据
       var menuData = this.data.menuData;
       if (menuData.length > level) {
         menuData.splice(level, menuData.length - level);
       }
-      menuData.push(menuItem);
     },
     /**
      * 添加细项(panel(1)->menu(n)->li(n))
