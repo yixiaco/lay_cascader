@@ -1261,8 +1261,8 @@ layui.define(["jquery"], function (exports) {
       var $panel = this.$panel;
       var popperClass = this.config.popperClass || '';
       if (!$panel) {
-        // z-index：解决和layer.open默认19891014的冲突
-        this.$panel = $('<div class="el-popper el-cascader__dropdown ' + popperClass + '" style="position: absolute; z-index: 19891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
+        // z-index：解决和layer.open默认19891016的冲突
+        this.$panel = $('<div class="el-popper el-cascader__dropdown ' + popperClass + '" style="position: absolute; z-index: 109891015;display: none;" x-placement="bottom-start"><div class="el-cascader-panel"></div><div class="popper__arrow" style="left: 35px;"></div></div>');
         $panel = this.$panel;
         $panel.appendTo('body');
         $panel.click(function (event) {
