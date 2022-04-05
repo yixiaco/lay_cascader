@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "node build/nodejs.js cascader"
+  },
+  "dependencies": {
+    "uglify-js": "^3.15.3",
+    "uglifycss": "^0.0.29"
+  }
+}

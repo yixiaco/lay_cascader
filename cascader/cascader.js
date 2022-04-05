@@ -1151,9 +1151,9 @@ layui.define(["jquery"], function (exports) {
         this.$tags = $('<div class="el-cascader__tags"><!----></div>');
         this.$div.append(this.$tags);
       }
-      this._initHideElement($e);
-      // 替换元素
-      $e.replaceWith(this.$div);
+      var element = this._initHideElement($e);
+      // 在后面插入元素
+      element.after(this.$div);
       this.$icon = this.$input.find('i');
       this._initFilterableInputEvent();
       this.disabled(this.config.disabled);
@@ -1164,18 +1164,28 @@ layui.define(["jquery"], function (exports) {
      * @private
      */
     _initHideElement: function ($e) {
+      var tagName = $e.prop("tagName").toLowerCase();
       // 保存原始元素
-      var attributes = $e[0].attributes;
-      var $input = $('<input />');
-      var keys = Object.keys(attributes);
-      for (var key in keys) {
-        var attribute = attributes[key];
-        $input.attr(attribute.name, attribute.value);
+      if (tagName === 'input') {
+        $e.hide();
+        $e.attr('type', 'hidden')
+        this.$ec = $e;
+        return $e;
+      } else {
+        var attributes = $e[0].attributes;
+        var $input = $('<input />');
+        var keys = Object.keys(attributes);
+        for (var key in keys) {
+          var attribute = attributes[key];
+          $input.attr(attribute.name, attribute.value);
+        }
+        $input.hide();
+        $input.attr('type', 'hidden')
+        this.$ec = $input;
+        $e.before($input);
+        $e.remove();
+        return $input;
       }
-      $input.hide();
-      $input.attr('type', 'hidden')
-      this.$ec = $input;
-      $e.before($input);
     },
     /**
      * 初始化可搜索监听事件
