@@ -955,7 +955,7 @@ layui.define(["jquery"], function (exports) {
     // 面板关闭事件id
     this.closeEventId = 0;
     // 是否进入maxSize模式
-    this._maxSizeMode = false;
+    this._maxSizeMode = null;
   }
 
   Cascader.prototype = {
