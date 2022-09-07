@@ -1426,6 +1426,10 @@ layui.define(["jquery"], function (exports) {
       for (var key in data) {
         var datum = data[key];
         var node = new Node(datum, this, level, parentNode);
+        // 过滤value为null或者undefined的数据
+        if (node.value === null || node.value === undefined) {
+          continue;
+        }
         nodes.push(node);
         if (node.children && node.children.length > 0) {
           node.setChildren(this.initNodes(node.children, level + 1, node));
