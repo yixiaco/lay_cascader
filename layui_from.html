@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="./cascader/cascader.css"/>
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+    <title>LayCascader级联From演示</title>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item" style="width: 900px;">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: 900px;">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <select name="status" multiple lay-search lay-verify="required" class="layui-input" required>
+                <option value>请选择设备状态</option>
+                <option value="S0A">无效</option>
+                <option value="S0X">有效</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: 900px;">
+        <label class="layui-form-label">所在地区</label>
+        <div class="layui-input-block">
+            <input id="area" name="area" required lay-verify="required"/>
+        </div>
+    </div>
+    <div class="layui-form-item" style="width: 900px;">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <select name="status" lay-verify="required" class="layui-input" required>
+                <option value>请选择设备状态</option>
+                <option value="S0A">无效</option>
+                <option value="S0X">有效</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="*">保存</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+  layui.config({
+    base: '/' // 请根据实际调整位置
+  }).extend({
+    layCascader: 'cascader/cascader' // 请根据实际调整位置
+  });
+
+  layui.use(['form', 'layCascader','jquery'], function () {
+    var form = layui.form;
+    var $ = layui.jquery;
+    form.on('submit(*)', function (data) {
+      console.log(data);
+      return false;
+    });
+
+    var layCascader = layui.layCascader;
+    var options = [{
+      id: 'gd',
+      title: '广东',
+      children: [{
+        id: 'gz',
+        title: '广州'
+      }, {
+        id: 'fs',
+        title: '佛山'
+      }, {
+        id: 'sz',
+        title: '深圳'
+      }]
+    }, {
+      id: 'gx',
+      title: '广西',
+      children: [{
+        id: 'gl',
+        title: '桂林'
+      }, {
+        id: 'nn',
+        title: '南宁'
+      }]
+    }];
+    var layCascader1 = layCascader({
+      props:{
+        checkStrictly: true,
+        multiple: true,
+        label: 'title',
+        value: 'id',
+        city_id: 'city_id'
+      },
+      elem: '#area',
+      showAllLevels: true,
+      filterable: true,
+      placeholder: '请选择设备归属机构',
+      clearable: true,
+      options: options,
+      extendClass: true
+    });
+    layCascader1.openEvent(function() {
+      console.log('打开级联窗口')
+    })
+  });
+</script>
+</body>
+</html>

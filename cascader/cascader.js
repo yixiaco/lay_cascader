@@ -7,6 +7,13 @@
  * gitee: https://gitee.com/yixiacoco/lay_cascader
  * github: https://github.com/yixiaco/lay_cascader
  */
+;!function (e) {
+  var src = e.document.currentScript.src;
+  var groupMatch = /(\S*\/)cascader(\.min)?\.js(\?.*)?/i.exec(src);
+  if (groupMatch && groupMatch.length >= 2 && (!groupMatch[3] || groupMatch[3].indexOf('css=true') !== -1)) {
+    layui.link(groupMatch[1] + 'cascader' + (groupMatch[2] || '') + '.css');
+  }
+}(window);
 layui.define(["jquery"], function (exports) {
   var $ = layui.jquery;
 
