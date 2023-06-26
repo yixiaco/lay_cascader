@@ -1206,7 +1206,7 @@ layui.define(["jquery"], function (exports) {
       this.$tags = $('<div class="el-cascader__tags"><!----></div>');
       this.$div.append(this.$tags);
       // 多选标签
-      if (multiple) {
+      if (!multiple) {
         this.$tags.hide();
       }
       var element = this._initHideElement($e);
