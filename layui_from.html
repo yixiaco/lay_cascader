@@ -44,6 +44,11 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-input-block">
+            <button class="layui-btn" id="options1">使用Options1数据</button>
+            <button class="layui-btn" id="options2">使用Options2数据</button>
+            <button class="layui-btn" id="destroy">销毁级联</button>
+            <button class="layui-btn" id="init">初始化级联</button>
+            <button class="layui-btn" id="switch">使用级联多选</button>
             <button class="layui-btn" lay-submit lay-filter="*">保存</button>
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
@@ -89,14 +94,38 @@
         title: '南宁'
       }]
     }];
+    var options2 = [{
+      id: 'fj',
+      title: '福建',
+      children: [{
+        id: 'qz',
+        title: '泉州'
+      }, {
+        id: 'xm',
+        title: '厦门'
+      }, {
+        id: 'zz',
+        title: '漳州'
+      }]
+    }, {
+      id: 'hn',
+      title: '河南',
+      children: [{
+        id: 'zhengzhou',
+        title: '郑州'
+      }, {
+        id: 'nn',
+        title: '南宁'
+      }]
+    }];
     var layCascader1 = layCascader({
       props:{
         checkStrictly: true,
-        multiple: true,
         label: 'title',
         value: 'id',
         city_id: 'city_id'
       },
+      value: 'gz',
       elem: '#area',
       showAllLevels: true,
       filterable: true,
@@ -107,7 +136,29 @@
     });
     layCascader1.openEvent(function() {
       console.log('打开级联窗口')
-    })
+    });
+    layCascader1.destroyEvent(function() {
+      console.log('销毁级联窗口')
+    });
+
+    $('#options1').click(function () {
+        layCascader1.setOptions(options);
+    });
+    $('#options2').click(function () {
+        layCascader1.setOptions(options2);
+    });
+    $('#destroy').click(function () {
+      layCascader1.destroy();
+    });
+    $('#init').click(function () {
+      layCascader1 = layCascader(layCascader1.getConfig());
+    });
+    $('#switch').click(function () {
+      var config = layCascader1.getConfig();
+      config.props.multiple = !config.props.multiple;
+      layCascader1.setConfig(config);
+      $('#switch').text(config.props.multiple ? '使用级联单选' : '使用级联多选');
+    });
   });
 </script>
 </body>

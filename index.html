@@ -2,9 +2,9 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css"/>
 <!--    <link rel="stylesheet" type="text/css" href="./cascader/cascader.css"/>-->
-    <script src="https://cdn.staticfile.org/layui/2.6.8/layui.min.js"></script>
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
     <script src="./cascader/cascader.js?css=true"></script>
     <script src="./data/options.js"></script>
     <title>LayCascader级联组件演示</title>
@@ -1291,9 +1291,19 @@ layui.use('layCascader', function () {
             <td>function(){}</td>
         </tr>
         <tr>
+            <td>destroyEvent</td>
+            <td>当面板销毁时，执行回调</td>
+            <td>function(){}</td>
+        </tr>
+        <tr>
             <td>disabled</td>
             <td>禁用组件</td>
             <td>Boolean</td>
+        </tr>
+        <tr>
+            <td>open</td>
+            <td>展开面板</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>close</td>
@@ -1301,8 +1311,8 @@ layui.use('layCascader', function () {
             <td>-</td>
         </tr>
         <tr>
-            <td>open</td>
-            <td>展开面板</td>
+            <td>destroy</td>
+            <td>销毁组件。销毁组件后不允许再次调用对象方法，但可以使用构造方法重新初始化组件。</td>
             <td>-</td>
         </tr>
         <tr>
@@ -1329,6 +1339,11 @@ layui.use('layCascader', function () {
             <td>getConfig</td>
             <td>获取当前配置副本</td>
             <td>-</td>
+        </tr>
+        <tr>
+            <td>setConfig</td>
+            <td>设置配置参数</td>
+            <td>Object，参考Attributes</td>
         </tr>
         <tr>
             <td>getData</td>

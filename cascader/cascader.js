@@ -893,8 +893,11 @@ layui.define(["jquery"], function (exports) {
     }
   };
 
-  function Cascader(config) {
-    this.config = $.extend(true, {
+  /**
+   * 获取默认配置
+   */
+  function getDefaultConfig() {
+    return {
       elem: '',             //绑定元素
       value: null,          //预设值
       options: [],          //可选项数据源，键名可通过 Props 属性配置
@@ -935,7 +938,11 @@ layui.define(["jquery"], function (exports) {
         disabled: 'disabled',   //指定选项的禁用为选项对象的某个属性值	string	—	'disabled'
         leaf: 'leaf'	          //指定选项的叶子节点的标志位为选项对象的某个属性值	string	—	'leaf'
       }
-    }, config);
+    };
+  }
+
+  function Cascader(config) {
+    this.config = $.extend(true, getDefaultConfig(), config);
     this.data = {
       nodeId: 1,            //nodeId的自增值
       nodes: [],            //存储Node对象
@@ -953,7 +960,9 @@ layui.define(["jquery"], function (exports) {
       // 打开事件
       open: [],
       // 关闭事件
-      close: []
+      close: [],
+      // 销毁事件
+      destroy: []
     }
     // 是否正在搜索中
     this.filtering = false;
@@ -1004,7 +1013,7 @@ layui.define(["jquery"], function (exports) {
     },
     // 初始化
     _init: function () {
-      this._checkConfig();
+      this._checkConfig(this.config);
       // 初始化输入框
       this._initInput();
       // 初始化面板
@@ -1013,12 +1022,21 @@ layui.define(["jquery"], function (exports) {
       this.setOptions(this.config.options);
       var self = this;
       // 监听滚动条
-      $(window).scroll(function () {
+      var scrollCall = function () {
         self._resetXY();
+      };
+      var $window = $(window);
+      $window.scroll(scrollCall);
+      self.event.destroy.push(function () {
+        $window.unbind('scroll', scrollCall);
       });
       // 监听窗口
-      $(window).resize(function () {
+      var resizeCall = function () {
         self._resetXY();
+      };
+      $window.resize(resizeCall);
+      self.event.destroy.push(function () {
+        $window.unbind('resize', resizeCall);
       });
       // 点击事件，展开面板
       this.$div.click(function (event) {
@@ -1037,21 +1055,21 @@ layui.define(["jquery"], function (exports) {
      * 检查配置
      * @private
      */
-    _checkConfig: function () {
-      var elem = this.config.elem;
+    _checkConfig: function (config) {
+      var elem = config.elem;
       if (!elem || $(elem).length === 0) {
         throw new Error("缺少elem节点选择器");
       }
-      var maxSize = this.config.maxSize;
+      var maxSize = config.maxSize;
       if (typeof maxSize !== 'number' || maxSize < 0) {
         throw new Error("maxSize应是一个大于等于0的有效的number值");
       }
-      if (!Array.isArray(this.config.options)) {
+      if (!Array.isArray(config.options)) {
         throw new Error("options不是一个有效的数组");
       }
     },
     /**
-     * 初始化根目录
+     * 初始化根节点
      * @private
      */
     _initRoot: function () {
@@ -1071,6 +1089,25 @@ layui.define(["jquery"], function (exports) {
           self._appendMenu(self.data.nodes, 0);
         });
       }
+    },
+    /**
+     * 设置配置
+     */
+    setConfig: function (config) {
+      // 检查配置
+      var self = this;
+      self._checkConfig(config);
+      // 清除选中节点
+      self.clearCheckedNodes(true);
+      if (config.props && !config.props.multiple) {
+        self.$tags && self.$tags.hide();
+      } else {
+        self.$tags && self.$tags.show();
+      }
+      // 覆盖配置
+      self.config = $.extend(true, getDefaultConfig(), config);
+      // 初始化选项值
+      self.setOptions(config.options);
     },
     /**
      * 设置选项值
@@ -1166,10 +1203,11 @@ layui.define(["jquery"], function (exports) {
         '</div>')
       this.$div.append(this.$input);
       this.$inputRow = this.$input.find('.el-input__inner');
+      this.$tags = $('<div class="el-cascader__tags"><!----></div>');
+      this.$div.append(this.$tags);
       // 多选标签
       if (multiple) {
-        this.$tags = $('<div class="el-cascader__tags"><!----></div>');
-        this.$div.append(this.$tags);
+        this.$tags.hide();
       }
       var element = this._initHideElement($e);
       // 在后面插入元素
@@ -1654,7 +1692,8 @@ layui.define(["jquery"], function (exports) {
         var selectstart = function () {
           return false;
         };
-        $(document).bind("selectstart", selectstart);
+        var $document = $(document);
+        $document.bind("selectstart", selectstart);
         var y = event.clientY;
         var scrollTop = scrollbar.scrollTop();
         // 移动事件
@@ -1663,13 +1702,13 @@ layui.define(["jquery"], function (exports) {
           var number = scrollTop + (event.clientY - y) / hScale;
           scrollbar.scrollTop(number);
         };
-        $(document).bind('mousemove', mousemove);
+        $document.bind('mousemove', mousemove);
         // 鼠标松开事件
-        $(document).one('mouseup', function (event) {
+        $document.one('mouseup', function (event) {
           stopPropagation(event);
           event.stopImmediatePropagation();
-          $(document).off('mousemove', mousemove);
-          $(document).off('selectstart', selectstart);
+          $document.off('mousemove', mousemove);
+          $document.off('selectstart', selectstart);
         });
       });
       // 监听滚动条事件
@@ -1915,6 +1954,19 @@ layui.define(["jquery"], function (exports) {
       }
     },
     /**
+     * 执行销毁事件
+     */
+    destroy: function () {
+      // 销毁div元素
+      this.$div.remove();
+      // 销毁面板元素
+      this.$panel.remove();
+      // 执行销毁事件
+      this.event.destroy.forEach(function (call) {
+        call && call();
+      });
+    },
+    /**
      * 下拉框出现/隐藏时触发
      * @param visible 出现则为 true，隐藏则为 false
      */
@@ -2026,6 +2078,9 @@ layui.define(["jquery"], function (exports) {
        * @param callback  function(value,node){}
        */
       changeEvent: function (callback) {
+        if (typeof callback !== 'function') {
+          throw new Error('changeEvent回调事件不是一个有效的方法');
+        }
         self.event.change.push(callback);
       },
       /**
@@ -2033,6 +2088,9 @@ layui.define(["jquery"], function (exports) {
        * @param callback  function(){}
        */
       closeEvent: function (callback) {
+        if (typeof callback !== 'function') {
+          throw new Error('closeEvent回调事件不是一个有效的方法');
+        }
         self.event.close.push(callback);
       },
       /**
@@ -2040,7 +2098,20 @@ layui.define(["jquery"], function (exports) {
        * @param callback  function(){}
        */
       openEvent: function (callback) {
+        if (typeof callback !== 'function') {
+          throw new Error('openEvent回调事件不是一个有效的方法');
+        }
         self.event.open.push(callback);
+      },
+      /**
+       * 当面板销毁时，执行回调
+       * @param callback  function(){}
+       */
+      destroyEvent: function (callback) {
+        if (typeof callback !== 'function') {
+          throw new Error('destroyEvent回调事件不是一个有效的方法');
+        }
+        self.event.destroy.push(callback);
       },
       /**
        * 禁用组件
@@ -2060,6 +2131,12 @@ layui.define(["jquery"], function (exports) {
        */
       open: function () {
         self.open();
+      },
+      /**
+       * 销毁组件
+       */
+      destroy: function () {
+        self.destroy();
       },
       /**
        * 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象
@@ -2101,6 +2178,13 @@ layui.define(["jquery"], function (exports) {
        */
       getConfig: function () {
         return $.extend(true, {}, self.config);
+      },
+      /**
+       * 设置配置参数
+       * @param config 配置参数
+       */
+      setConfig: function (config) {
+        self.setConfig(config);
       },
       /**
        * 获取数据对象副本
