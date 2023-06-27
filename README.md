@@ -1,5 +1,9 @@
 # lay_cascader
-layui cascader 仿element-ui级联选择器
+[![码云Gitee](https://gitee.com/yixiacoco/lay_cascader/badge/star.svg?theme=blue)](https://gitee.com/yixiacoco/lay_cascader)
+[![GitHub](https://img.shields.io/github/stars/yixiaco/lay_cascader.svg?style=social&label=Stars)](https://github.com/yixiaco/lay_cascader)
+[![License](https://img.shields.io/badge/License-BSD3Clause-blue.svg)](https://gitee.com/yixiacoco/lay_cascader/blob/main/LICENSE)
+
+> layui cascader 仿element-ui级联选择器
 
 **演示页面**：https://yixiaco.github.io/lay_cascader/
 
@@ -58,12 +62,15 @@ layui cascader 仿element-ui级联选择器
 | changeEvent       | 当节点变更时，执行回调 多选时，参数是一个数组                | 单选：function(value,Node){} 多选：function(values,Nodes){}  |
 | openEvent         | 当面板打开时，执行回调                                       | function(){}                                                 |
 | closeEvent        | 当面板关闭时，执行回调                                       | function(){}                                                 |
+| destroyEvent      | 当面板销毁时，执行回调                                       | function(){}                                                 |
 | disabled          | 禁用组件                                                     | Boolean                                                      |
-| close             | 收起面板                                                     | -                                                            |
 | open              | 展开面板                                                     | -                                                            |
+| close             | 收起面板                                                     | -                                                            |
+| destroy           | 销毁组件。销毁组件后不允许再次调用对象方法，但可以使用构造方法重新初始化组件。 |                                                              |
 | getCheckedNodes   | 获取选中的节点，如需获取路径，使用node.path获取,将获取各级节点的node对象。严格模式下返回包含父级的层级结构 | -                                                            |
 | getCheckedValues  | 获取选中的值.严格模式下返回包含父级的层级结构                | -                                                            |
 | clearCheckedNodes | 清空选中的节点                                               | Boolean: 是否强制删除固定的禁用项，默认不会清空禁用项        |
 | expandNode        | 展开面板到节点所在的层级                                     | value: 节点值，只能传单个值，不允许传数组                    |
 | getConfig         | 获取当前配置副本                                             | -                                                            |
+| setConfig         | 设置配置参数                                                 | Object，参考Attributes                                       |
 | getData           | 获取数据对象副本                                             | -                                                            |
