@@ -966,8 +966,11 @@ layui.define(["jquery"], function (exports) {
     }
     // 是否正在搜索中
     this.filtering = false;
-    // 初始化
-    this._init();
+    var self = this;
+    $(window).load(function () {
+      // 初始化
+      self._init();
+    });
     // 面板关闭事件id
     this.closeEventId = 0;
     // 是否进入maxSize模式
@@ -1769,13 +1772,11 @@ layui.define(["jquery"], function (exports) {
               tags.push(self.get$tag('+ ' + (checkedNodes.length - minCollapseTagsNumber), false));
             }
           }
-          tags.forEach(function (tag) {
-            if ($tagsInput) {
-              $tagsInput.before(tag)
-            } else {
-              self.$tags.append(tag);
-            }
-          });
+          if ($tagsInput) {
+            $tagsInput.before(tags)
+          } else {
+            self.$tags.append(tags);
+          }
         }
         var tagHeight = self.$tags.height();
         var inputHeight = $inputRow.height();
