@@ -967,7 +967,7 @@ layui.define(["jquery"], function (exports) {
     // 是否正在搜索中
     this.filtering = false;
     var self = this;
-    $(window).load(function () {
+    $(window).on('load', function () {
       // 初始化
       self._init();
     });
