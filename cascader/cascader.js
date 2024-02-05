@@ -216,7 +216,7 @@ layui.define(["jquery"], function (exports) {
       if (!this.leaf) {
         icon = rightIcon;
       }
-      this.$li = $('<li role="menuitem" id="cascader-menu" tabindex="-1" class="el-cascader-node" aria-haspopup="true" aria-owns="cascader-menu"><span class="el-cascader-node__label">' + label + '</span><i class="' + fromIcon + ' ' + icon + '"></i></li>');
+      this.$li = $('<li role="menuitem" id="cascader-menu" tabindex="-1" class="el-cascader-node"><span class="el-cascader-node__label">' + label + '</span><i class="' + fromIcon + ' ' + icon + '"></i></li>');
 
       // 节点渲染
       if (!multiple && !checkStrictly) {
